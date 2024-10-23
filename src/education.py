@@ -1,23 +1,12 @@
 import mysql.connector
 from tabulate import tabulate
-
-def connect_to_database():
-    try:
-        connection = mysql.connector.connect(
-            host="127.0.0.1",
-            user="root",
-            password="root",
-            database="linkedin"
-        )
-        print("Connected to the database successfully")
-        return connection
-    except mysql.connector.Error as err:
-        print(f"Error connecting to the database: {err}")
-        return None
+from db import connect_to_database
+connection = connect_to_database()
 
 def create_education(connection):
     cursor = connection.cursor()
-    user_id = input("Enter User ID: ")
+
+    user_id = input("\nEnter User ID: ")
     institution_id = input("Enter Institution ID: ")
     start = input("Enter Start Date (YYYY-MM-DD): ")
     end = input("Enter End Date (YYYY-MM-DD): ")
@@ -30,23 +19,29 @@ def create_education(connection):
     cursor.execute(query, values)
     connection.commit()
     education_id = cursor.lastrowid
-    print(f"Education record created successfully with ID: {education_id}")
+
+    print(f"\nEducation record created successfully with ID: {education_id}")
     cursor.close()
 
 def read_education(connection):
     cursor = connection.cursor(dictionary=True)
-    user_id = input("Enter User ID to retrieve education records: ")
+
+    user_id = input("\nEnter User ID to retrieve education records: ")
     query = "SELECT * FROM education WHERE user_id = %s"
+
     cursor.execute(query, (user_id,))
     results = cursor.fetchall()
+
     if results:
         print(tabulate(results, headers="keys", tablefmt="grid"))
     else:
         print("No education records found for this user.")
+
     cursor.close()
 
 def update_education(connection):
     cursor = connection.cursor()
+
     education_id = input("Enter Education ID to update: ")
     fields = ["user_id", "institution_id", "start_date", "end_date", "course"]
     updates = []
@@ -67,48 +62,52 @@ def update_education(connection):
 
     cursor.execute(query, tuple(values))
     connection.commit()
-    print("Education record updated successfully")
+
+    print("\nEducation record updated successfully")
     cursor.close()
 
 def delete_education(connection):
     cursor = connection.cursor()
+
     education_id = input("Enter Education ID to delete: ")
     query = "DELETE FROM education WHERE id = %s"
+
     cursor.execute(query, (education_id,))
     connection.commit()
+
     print(f"Education record with ID {education_id} deleted successfully")
+    
     cursor.close()
 
-def main():
+def education_menu():
     connection = connect_to_database()
+
     if not connection:
         return
 
     while True:
         print("\nChoose an operation:")
-        print("0: Create education record")
-        print("1: Read education records")
-        print("2: Update education record")
-        print("3: Delete education record")
-        print("4: Exit")
+        print("1: Create education record")
+        print("2: Read education records")
+        print("3: Update education record")
+        print("4: Delete education record")
+        print("0: Exit")
 
-        choice = input("Enter your choice (0-4): ")
+        choice = input("\nEnter your choice (0-4): ")
 
-        if choice == '0':
+        if choice == '1':
             create_education(connection)
-        elif choice == '1':
-            read_education(connection)
         elif choice == '2':
-            update_education(connection)
+            read_education(connection)
         elif choice == '3':
-            delete_education(connection)
+            update_education(connection)
         elif choice == '4':
-            break
+            delete_education(connection)
+        elif choice == '0':
+            connection.close()
+            print("Database Disconnected Successfully!")
+            print("\nExit from Education Menu.")
+            print("\n      - X - X - X -")
+            return
         else:
-            print("Invalid choice. Please try again.")
-
-    connection.close()
-    print("Goodbye!")
-
-if __name__ == "__main__":
-    main()
+            print("\nInvalid choice. Please try again.")

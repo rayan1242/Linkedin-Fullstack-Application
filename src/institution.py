@@ -1,17 +1,12 @@
 import mysql.connector
 from tabulate import tabulate
-
-def connect_to_database():
-    return mysql.connector.connect(
-        host="127.0.0.1",
-        user="root",
-        password="root",
-        database="linkedin"
-    )
+from db import connect_to_database
+connection = connect_to_database()
 
 def create_institution(connection):
     cursor = connection.cursor()
-    no_of_employees = input("Enter number of employees: ")
+
+    no_of_employees = input("\nEnter number of employees: ")
     website = input("Enter website: ")
     industry = input("Enter industry: ")
     name = input("Enter name: ")
@@ -29,25 +24,31 @@ def create_institution(connection):
     cursor.execute(query, values)
     connection.commit()
     institution_id = cursor.lastrowid
-    print("User created successfully with ID:", institution_id)
+
+    print("\nInstitution created successfully with ID:", institution_id)
     cursor.close()
     return institution_id
 
 def read_institution(connection):
     cursor = connection.cursor(dictionary=True)
-    institution_id = input("Enter institution ID: ")
+
+    institution_id = input("\nEnter institution ID: ")
     query = "SELECT * FROM institution WHERE institution_id = %s"
+    
     cursor.execute(query, (institution_id,))
     result = cursor.fetchone()
+    
     if result:
         print(tabulate([result], headers="keys", tablefmt="grid"))
     else:
         print("Institution not found")
+    
     cursor.close()
 
 def update_institution(connection):
     cursor = connection.cursor()
-    institution_id = input("Enter institution ID to update: ")
+    
+    institution_id = input("\nEnter institution ID to update: ")
     fields = ["no_of_employees", "website", "industry", "name", "description", 
               "location_city", "location_state", "location_country"]
     updates = []
@@ -68,47 +69,48 @@ def update_institution(connection):
 
     cursor.execute(query, tuple(values))
     connection.commit()
-    print("Institution updated successfully")
+    
+    print("\nInstitution updated successfully")
     cursor.close()
 
 def delete_institution(connection):
     cursor = connection.cursor()
-    institution_id = input("Enter institution ID to delete: ")
+    
+    institution_id = input("\nEnter institution ID to delete: ")
     query = "DELETE FROM institution WHERE institution_id = %s"
+    
     cursor.execute(query, (institution_id,))
     connection.commit()
-    print("Institution deleted successfully")
+    
+    print("\nInstitution deleted successfully")
     cursor.close()
 
-def main():
+def institution_menu():
     connection = connect_to_database()
-    print("Connected to the database successfully")
     
     while True:
         print("\nChoose an operation:")
-        print("0: Create institution")
-        print("1: Read institution")
-        print("2: Update institution")
-        print("3: Delete institution")
-        print("4: Exit")
+        print("1: Create institution")
+        print("2: Read institution")
+        print("3: Update institution")
+        print("4: Delete institution")
+        print("0: Exit")
 
-        choice = input("Enter your choice (0-4): ")
+        choice = input("\nEnter your choice (0-4): ")
 
-        if choice == '0':
+        if choice == '1':
             create_institution(connection)
-        elif choice == '1':
-            read_institution(connection)
         elif choice == '2':
-            update_institution(connection)
+            read_institution(connection)
         elif choice == '3':
-            delete_institution(connection)
+            update_institution(connection)
         elif choice == '4':
-            break
+            delete_institution(connection)
+        elif choice == '0':
+            connection.close()
+            print("Database Disconnected Successfully!")
+            print("\nExit from Institution Menu.")
+            print("\n      - X - X - X -")
+            return
         else:
-            print("Invalid choice. Please try again.")
-
-    connection.close()
-    print("Goodbye!")
-
-if __name__ == "__main__":
-    main()
+            print("\nInvalid choice. Please try again.")
