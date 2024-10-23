@@ -1,70 +1,76 @@
-import mysql.connector
 from tabulate import tabulate
 import datetime
-
-# Establish database connection
-def connect_to_database():
-    return mysql.connector.connect(
-        host="127.0.0.1",
-        user="root",
-        password="root",
-        database="linkedin"
-    )
+from db import connect_to_database
+connection = connect_to_database()
 
 # Create user
 def create_user(connection):
     cursor = connection.cursor()
-    name = input("Enter name: ")
-    dob = input("Enter date of birth (YYYY-MM-DD): ")
-    profile_pic = input("Enter profile picture URL: ")
-    location_city = input("Enter city: ")
-    location_state = input("Enter state: ")
-    location_country = input("Enter country: ")
 
-    query = """INSERT INTO user (name, dob, profile_pic, location_city, location_state, location_country)
-               VALUES (%s, %s, %s, %s, %s, %s)"""
-    values = (name, dob, profile_pic, location_city, location_state, location_country)
+    name = input("\nEnter Full Name: ")
+    dob = input("Enter Date of Birth (YYYY-MM-DD): ")
+    age = input("Enter Age: ")
+    profile_pic = input("Enter Profile Picture URL: ")
+    location_city = input("Enter City: ")
+    location_state = input("Enter State: ")
+    location_country = input("Enter Country: ")
+
+    query = """INSERT INTO user (name, dob, age, profile_pic, location_city, location_state, location_country)
+               VALUES (%s, %s, %s, %s, %s, %s, %s)"""
+    values = (name, dob, age, profile_pic, location_city, location_state, location_country)
 
     cursor.execute(query, values)
     connection.commit()
+
     user_id = cursor.lastrowid
-    print("User created successfully with ID:", user_id)
+    print("\nUser created successfully with ID:", user_id)
+
     cursor.close()
+
     return user_id
 
 # Read user
 def read_user(connection):
     cursor = connection.cursor(dictionary=True)
+
     user_id = input("Enter user ID: ")
     query = "SELECT * FROM user WHERE user_id = %s"
+
     cursor.execute(query, (user_id,))
     result = cursor.fetchone()
+
     if result:
         print(tabulate([result], headers="keys", tablefmt="grid"))
     else:
         print("User not found")
+
     cursor.close()
 
 
 # Get all user
-def get_all_user(connection):
+def get_all_users(connection):
     cursor = connection.cursor(dictionary=True)
+
     query = "SELECT * FROM user"
     cursor.execute(query)
     result = cursor.fetchall()
+
     if result:
         for user in result:
             print(f"ID: {user['user_id']}, Name: {user['name']}, DOB: {user['dob']}, "
               f"Profile Pic: {user['profile_pic']}, City: {user['location_city']}, "
               f"State: {user['location_state']}, Country: {user['location_country']}")
+            
     else:
         print("User not found")
+
     cursor.close()
 
 # Update user
 def update_user(connection):
     cursor = connection.cursor()
-    user_id = input("Enter user ID to update: ")
+
+    user_id = input("\nEnter user ID to update: ")
     fields = ["name", "dob", "profile_pic", "location_city", "location_state", "location_country"]
     updates = []
     values = []
@@ -84,52 +90,53 @@ def update_user(connection):
 
     cursor.execute(query, tuple(values))
     connection.commit()
-    print("User updated successfully")
+    print("\nUser updated successfully")
     cursor.close()
 
 # Delete user
 def delete_user(connection):
     cursor = connection.cursor()
+
     user_id = input("Enter user ID to delete: ")
     query = "DELETE FROM user WHERE user_id = %s"
-    cursor.execute(query, (user_id,))
+    cursor.execute(query, (user_id))
     connection.commit()
+
     print("User deleted successfully")
+
     cursor.close()
 
 # Main function
-def main():
+def user_menu():
     connection = connect_to_database()
-    print("Connected to the database successfully")
-    
+
     while True:
         print("\nChoose an operation:")
-        print("0: Create user")
-        print("1: Read user")
-        print("2: Update user")
-        print("3: Delete user")
-        print("4: Get all user")
-        print("5: Exit")
+        print("1: Create a New User.")
+        print("2: Read an Existing User.")
+        print("3: Update Existing user's Data.")
+        print("4: Delete a User.")
+        print("5: Get all Users.")
+        print("0: Exit")
 
-        choice = input("Enter your choice (0-5): ")
+        choice = input("\nEnter your choice (0-5): ")
 
-        if choice == '0':
+        if choice == '1':
             create_user(connection)
-        elif choice == '1':
-            read_user(connection)
         elif choice == '2':
-            update_user(connection)
+            read_user(connection)
         elif choice == '3':
-            delete_user(connection)
+            update_user(connection)
         elif choice == '4':
-            get_all_user(connection)
+            delete_user(connection)
         elif choice == '5':
-            break
+            get_all_users(connection)
+        elif choice == '0':
+            connection.close()
+            print("Database Disconnected Successfully!")
+            print("\nExit from User Menu.")
+            print("\n      - X - X - X -")
+            return
         else:
-            print("Invalid choice. Please try again.")
-
-    connection.close()
-    print("Goodbye!")
-
-if __name__ == "__main__":
-    main()
+            print("\nInvalid choice. Please try again.")
+            user_menu()
