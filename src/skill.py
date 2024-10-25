@@ -35,6 +35,27 @@ def read_skill(connection):
 
     cursor.close()
 
+def get_all_skills(connection):
+    cursor = connection.cursor(dictionary=True)
+
+    query = "SELECT * FROM skill"
+    cursor.execute(query)
+    result = cursor.fetchall()
+
+    if result:
+        # Prepare the data for tabulate
+        table_data = []
+        for record in result:
+            table_data.append([
+                record['skill_id'],
+                record['skill_name']
+            ])
+
+        # Print the table
+        print(tabulate(table_data, headers=["skill_id", "skill_name"], tablefmt="grid"))
+    else:
+        print("No skill records found.")
+
 def update_skill(connection):
     cursor = connection.cursor()
 
@@ -75,8 +96,9 @@ def skill_menu():
         print("\nChoose an operation:")
         print("1: Create skill")
         print("2: Read skill")
-        print("3: Update skill")
-        print("4: Delete skill")
+        print("3. Get all skill records")
+        print("4: Update skill")
+        print("5: Delete skill")
         print("0: Exit")
 
         choice = input("\nEnter your choice (0-4): ")
@@ -86,8 +108,10 @@ def skill_menu():
         elif choice == '2':
             read_skill(connection)
         elif choice == '3':
-            update_skill(connection)
+            get_all_skills(connection)
         elif choice == '4':
+            update_skill(connection)
+        elif choice == '5':
             delete_skill(connection)
         elif choice == '0':
             connection.close()

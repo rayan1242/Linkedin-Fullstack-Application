@@ -11,6 +11,19 @@ def create_job(connection):
     description = input("Enter description: ")
     job_type = input("Enter type: ")
 
+    if(institution_id==""):
+        print("Error: Institution ID cannot be empty.")
+        return
+    if(job_title==""):
+        print("Error: Job title cannot be empty.")
+        return
+    if(description==""):
+        print("Error: Description cannot be empty.")
+        return
+    if(job_type==""):
+        print("Error: Type cannot be empty.")
+        return
+
     query = """INSERT INTO job (institution_id, job_title, description, type) 
                VALUES (%s, %s, %s, %s)"""
     values = (institution_id, job_title, description, job_type)
@@ -28,6 +41,11 @@ def read_job(connection):
     cursor = connection.cursor(dictionary=True)
 
     job_id = input("\nEnter job ID: ")
+    
+    if(job_id==""):
+        print("Error: Job ID cannot be empty.")
+        return    
+    
     query = "SELECT * FROM job WHERE job_id = %s"
 
     cursor.execute(query, (job_id,))
@@ -40,10 +58,42 @@ def read_job(connection):
 
     cursor.close()
 
+def get_all_jobs(connection):
+    cursor = connection.cursor(dictionary=True)
+
+    query = """
+    SELECT * FROM job
+    """
+    cursor.execute(query)
+    result = cursor.fetchall()
+
+    if result:
+        # Prepare the data for tabulate
+        table_data = []
+        for record in result:
+            table_data.append([
+                record['institution_id'],
+                record['job_title'],
+                record['description'],
+                record['type']
+            ])
+
+        # Print the table
+        print(tabulate(table_data, headers=["institution_id", "job_title", "description", "job_type"], tablefmt="grid"))
+    else:
+        print("No job records found.")
+
+    cursor.close()
+
 def update_job(connection):
     cursor = connection.cursor()
 
     job_id = input("\nEnter job ID to update: ")
+    
+    if(job_id==""):
+        print("Error: Job ID cannot be empty.")
+        return
+    
     fields = ["institution_id", "job_title", "description", "type"]
     updates = []
     values = []
@@ -71,6 +121,11 @@ def delete_job(connection):
     cursor = connection.cursor()
 
     job_id = input("Enter job ID to delete: ")
+    
+    if(job_id==""):
+        print("Error: Job ID cannot be empty.")
+        return
+        
     query = "DELETE FROM job WHERE job_id = %s"
 
     cursor.execute(query, (job_id,))
@@ -87,8 +142,9 @@ def job_menu():
         print("\nChoose an operation:")
         print("1: Create job")
         print("2: Read job")
-        print("3: Update job")
-        print("4: Delete job")
+        print("3: Get all job records")
+        print("4: Update job")
+        print("5: Delete job")
         print("0: Exit")
 
         choice = input("\nEnter your choice (0-4): ")
@@ -98,8 +154,10 @@ def job_menu():
         elif choice == '2':
             read_job(connection)
         elif choice == '3':
-            update_job(connection)
+            get_all_jobs(connection)
         elif choice == '4':
+            update_job(connection)
+        elif choice == '5':
             delete_job(connection)
         elif choice == '0':
             connection.close()

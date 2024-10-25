@@ -41,6 +41,37 @@ def read_post(connection):
 
     cursor.close()
 
+def get_all_posts(connection):
+    cursor = connection.cursor(dictionary=True)
+
+    query = """
+    SELECT p.post_id, u.name AS user_name, p.post_content, p.post_date, p.likes, p.last_liked_at
+    FROM post p
+    JOIN user u ON p.user_id = u.user_id
+    """
+    cursor.execute(query)
+    result = cursor.fetchall()
+
+    if result:
+        # Prepare the data for tabulate
+        table_data = []
+        for record in result:
+            table_data.append([
+                record['post_id'],
+                record['user_name'],
+                record['post_content'],
+                record['post_date'],
+                record['likes'],
+                record['last_liked_at']
+            ])
+
+        # Print the table
+        print(tabulate(table_data, headers=["post_id", "user_name", "post_content", "post_date", "likes", "last_liked_at"], tablefmt="grid"))
+    else:
+        print("No post records found.")
+
+    cursor.close()
+
 def update_post(connection):
     cursor = connection.cursor()
 
@@ -87,8 +118,9 @@ def post_menu():
         print("\nChoose an operation:")
         print("1: Create post")
         print("2: Read post")
-        print("3: Update post")
-        print("4: Delete post")
+        print("3. Get all post records")
+        print("4: Update post")
+        print("5: Delete post")
         print("0: Exit")
 
         choice = input("\nEnter your choice (0-4): ")
@@ -98,8 +130,10 @@ def post_menu():
         elif choice == '2':
             read_post(connection)
         elif choice == '3':
-            update_post(connection)
+            get_all_posts(connection)
         elif choice == '4':
+            update_post(connection)
+        elif choice == '5':
             delete_post(connection)
         elif choice == '0':
             connection.close()

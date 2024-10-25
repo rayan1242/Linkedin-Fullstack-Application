@@ -15,6 +15,13 @@ def create_user(connection):
     location_state = input("Enter State: ")
     location_country = input("Enter Country: ")
 
+    if(name==""):
+        print("Error: Name cannot be empty.")
+        return
+    if(dob==""):    
+        print("Error: Date of Birth cannot be empty.")
+        return
+
     query = """INSERT INTO user (name, dob, age, profile_pic, location_city, location_state, location_country)
                VALUES (%s, %s, %s, %s, %s, %s, %s)"""
     values = (name, dob, age, profile_pic, location_city, location_state, location_country)
@@ -36,6 +43,10 @@ def read_user(connection):
     user_id = input("Enter user ID: ")
     query = "SELECT * FROM user WHERE user_id = %s"
 
+    if(user_id==""):
+        print("Error: User ID cannot be empty.")
+        return
+
     cursor.execute(query, (user_id,))
     result = cursor.fetchone()
 
@@ -56,11 +67,21 @@ def get_all_users(connection):
     result = cursor.fetchall()
 
     if result:
+        table_data = []
         for user in result:
-            print(f"ID: {user['user_id']}, Name: {user['name']}, DOB: {user['dob']}, "
-              f"Profile Pic: {user['profile_pic']}, City: {user['location_city']}, "
-              f"State: {user['location_state']}, Country: {user['location_country']}")
-            
+            table_data.append([
+                user['user_id'],
+                user['name'],
+                user['dob'],
+                user['age'],  
+                user['profile_pic'],
+                user['location_city'],
+                user['location_state'],
+                user['location_country']
+            ])
+
+        print(tabulate(table_data, headers=["user_id", "name", "dob", "age", "profile_pic", "location_city", "location_state", "location_country"], tablefmt="grid"))
+       
     else:
         print("User not found")
 
@@ -74,6 +95,10 @@ def update_user(connection):
     fields = ["name", "dob", "profile_pic", "location_city", "location_state", "location_country"]
     updates = []
     values = []
+
+    if(user_id==""):
+        print("Error: User ID cannot be empty.")
+        return
 
     for field in fields:
         value = input(f"Enter new {field} (leave blank to skip): ")
@@ -98,6 +123,11 @@ def delete_user(connection):
     cursor = connection.cursor()
 
     user_id = input("Enter user ID to delete: ")
+
+    if(user_id==""):
+        print("Error: User ID cannot be empty.")
+        return
+
     query = "DELETE FROM user WHERE user_id = %s"
     cursor.execute(query, (user_id))
     connection.commit()

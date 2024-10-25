@@ -1,50 +1,89 @@
 import mysql.connector
 from tabulate import tabulate
 from db import connect_to_database
+
 connection = connect_to_database()
 
-def create_job(connection):
+def create_application(connection):
     cursor = connection.cursor()
 
-    institution_id = input("\nEnter institution ID: ")
-    job_title = input("Enter job title: ")
-    description = input("Enter description: ")
-    job_type = input("Enter type: ")
+    job_id = input("\nEnter job ID: ")
+    user_id = input("Enter user ID: ")
+    application_status = input("Enter application status: ")
+    application_date = input("Enter application date (YYYY-MM-DD): ")
 
-    query = """INSERT INTO job (institution_id, job_title, description, type) 
+    if(job_id==""):
+        print("Error: Job ID cannot be empty.")
+        return
+    if(user_id==""):
+        print("Error: User ID cannot be empty.")
+        return
+    if(application_status==""):
+        print("Error: Application status cannot be empty.")
+        return
+    if(application_date==""):
+        print("Error: Application date cannot be empty.")
+        return
+    
+
+    query = """INSERT INTO application (job_id, user_id, application_status, application_date) 
                VALUES (%s, %s, %s, %s)"""
-    values = (institution_id, job_title, description, job_type)
+    values = (job_id, user_id, application_status, application_date)
 
     cursor.execute(query, values)
     connection.commit()
-    job_id = cursor.lastrowid
+    application_id = cursor.lastrowid
 
-    print("\nJob created successfully with ID:", job_id)
+    print("\nApplication created successfully with ID:", application_id)
     cursor.close()
 
-    return job_id
+    return application_id
 
-def read_job(connection):
+def read_application(connection):
     cursor = connection.cursor(dictionary=True)
 
-    job_id = input("\nEnter job ID: ")
-    query = "SELECT * FROM job WHERE job_id = %s"
+    application_id = input("\nEnter application ID: ")
+    
+    if(application_id==""):
+        print("Error: Application ID cannot be empty.")
+        return
+    
+    query = "SELECT * FROM application WHERE application_id = %s"
 
-    cursor.execute(query, (job_id,))
+    cursor.execute(query, (application_id,))
     result = cursor.fetchone()
 
     if result:
         print(tabulate([result], headers="keys", tablefmt="grid"))
     else:
-        print("\nJob not found")
+        print("\nApplication not found")
 
     cursor.close()
 
-def update_job(connection):
+def get_all_applications(connection):
+    cursor = connection.cursor(dictionary=True)
+
+    query = "SELECT * FROM application"
+    cursor.execute(query)
+    result = cursor.fetchall()
+
+    if result:
+        print("\nAll Applications:")
+        print(tabulate(result, headers="keys", tablefmt="grid"))
+    else:
+        print("No applications found.")
+
+    cursor.close()
+
+def update_application(connection):
     cursor = connection.cursor()
 
-    job_id = input("\nEnter job ID to update: ")
-    fields = ["institution_id", "job_title", "description", "type"]
+    application_id = input("\nEnter application ID to update: ")
+    if(application_id==""):
+        print("Error: Application ID cannot be empty.")
+        return
+    
+    fields = ["job_id", "user_id", "application_status", "application_date"]
     updates = []
     values = []
 
@@ -58,26 +97,31 @@ def update_job(connection):
         print("\nNo fields to update")
         return
 
-    query = f"UPDATE job SET {', '.join(updates)} WHERE job_id = %s"
-    values.append(job_id)
+    query = f"UPDATE application SET {', '.join(updates)} WHERE application_id = %s"
+    values.append(application_id)
 
     cursor.execute(query, tuple(values))
     connection.commit()
 
-    print("\nJob updated successfully")
+    print("\nApplication updated successfully")
 
     cursor.close()
 
-def delete_job(connection):
+def delete_application(connection):
     cursor = connection.cursor()
 
-    job_id = input("\nEnter job ID to delete: ")
-    query = "DELETE FROM job WHERE job_id = %s"
+    application_id = input("\nEnter application ID to delete: ")
+   
+    if(application_id==""):
+        print("Error: Application ID cannot be empty.")
+        return
+    
+    query = "DELETE FROM application WHERE application_id = %s"
 
-    cursor.execute(query, (job_id,))
+    cursor.execute(query, (application_id,))
     connection.commit()
 
-    print("\nJob deleted successfully")
+    print("\nApplication deleted successfully")
 
     cursor.close()
 
@@ -86,25 +130,29 @@ def application_menu():
     
     while True:
         print("\nChoose an operation:")
-        print("1: Create job")
-        print("2: Read job")
-        print("3: Update job")
-        print("4: Delete job")
+        print("1: Create application")
+        print("2: Read application")
+        print("3. Get all application Records")
+        print("3: Update application")
+        print("4: Delete application")
         print("0: Exit")
 
-        choice = input("Enter your choice (0-4): ")
+        choice = input("\nEnter your choice (0-4): ")
 
         if choice == '1':
-            create_job(connection)
+            create_application(connection)
         elif choice == '2':
-            read_job(connection)
+            read_application(connection)
         elif choice == '3':
-            update_job(connection)
+            get_all_applications(connection)
         elif choice == '4':
-            delete_job(connection)
+            update_application(connection)
+        elif choice == '5':
+            delete_application(connection)
         elif choice == '0':
+            connection.close()
             print("Database Disconnected Successfully!")
-            print("\nExit from Experience Menu.")
+            print("\nExit from Institution Menu.")
             print("\n      - X - X - X -")
             return
         else:
