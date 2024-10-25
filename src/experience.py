@@ -13,46 +13,62 @@ def create_experience(connection):
     end = input("Enter End Date (YYYY-MM-DD): ")
     description = input("Enter Description: ")
 
-    if(title==""):
+    if not user_id:
+        print("Error: User ID cannot be empty.")
+        return
+    
+    if not user_id.isdigit():
+        print("Error: User ID must be a number.")
+        return
+    if not institution_id.isdigit():
+        print("Error: Institution ID must be a number.")
+        return
+    if not title:
         print("Error: Title cannot be empty.")
         return 
-    if(start==""):
+    if not start:
         print("Error: Start date cannot be empty.")
         return
-    if(description==""):
+    if not description:
         print("Error: Description cannot be empty.")
         return
-    if(user_id==""):
+    if not user_id:
         print("Error: User ID cannot be empty.")
         return
 
     # Error handling for date validation
     if(end==""):
-        query = """INSERT INTO experience (user_id, institution_id, start, description, title)
-               VALUES (%s, %s, %s, %s, %s)"""
-        values = (user_id, institution_id, start, description, title)
-        cursor.execute(query, values)
-        connection.commit()
-        experience_id = cursor.lastrowid
-        print(f"Experience created successfully with ID: {experience_id}")
-        cursor.close()
-        return
+        try:
+            query = """INSERT INTO experience (user_id, institution_id, start, description, title)
+                       VALUES (%s, %s, %s, %s, %s)"""
+            values = (user_id, institution_id, start, description, title)
+            cursor.execute(query, values)
+            connection.commit()
+            experience_id = cursor.lastrowid
+            print(f"Experience created successfully with ID: {experience_id}")
+        except mysql.connector.Error as err:
+            print(f"Error: {err}")
+        finally:
+            cursor.close()
+        return experience_id
 
     if(end!=""):
         if start >= end:
             print("Error: Start date must be earlier than end date.")
             return
-
-    query = """INSERT INTO experience (user_id, institution_id, start, end, description, title)
-               VALUES (%s, %s, %s, %s, %s, %s)"""
-    values = (user_id, institution_id, start, end, description, title)
-
-    cursor.execute(query, values)
-    connection.commit()
-    experience_id = cursor.lastrowid
-
-    print(f"\nExperience created successfully with ID: {experience_id}")
-    cursor.close()
+    try:
+        query = """INSERT INTO experience (user_id, institution_id, start, end, description, title)
+                   VALUES (%s, %s, %s, %s, %s, %s)"""
+        values = (user_id, institution_id, start, end, description, title)
+        cursor.execute(query, values)
+        connection.commit()
+        experience_id = cursor.lastrowid
+        print(f"Experience created successfully with ID: {experience_id}")
+    except mysql.connector.Error as err:
+        print(f"Error: {err}")
+    finally:
+        cursor.close()
+    return experience_id
 
 def read_experience(connection):
     cursor = connection.cursor(dictionary=True)
@@ -104,18 +120,31 @@ def get_all_experience(connection):
 def update_experience(connection):
     cursor = connection.cursor()
 
-    experience_id = input("Enter Experience ID to update: ")
+    exp_id = input("Enter Experience ID to update: ")
     
     if(exp_id==""):
         print("Error: Experience ID cannot be empty.")
         return  
+    if not exp_id.isdigit():    
+        print("Error: Experience ID must be a numeric string.")
+        return  
+
     
-    fields = ["user_id", "institution_id", "title", "company", "location", "start_date", "end_date", "description"]
+    fields = ["user_id", "institution_id", "title", "company", "location", "start", "end", "description"]
     updates = []
     values = []
 
     for field in fields:
         value = input(f"Enter new {field} (leave blank to skip): ")
+        if field in ["user_id", "institution_id"] and value and not value.isdigit():
+            print(f"Error: {field.replace('_', ' ').title()} must be a number.")
+            return
+        if field in ["start", "end"] and value:
+            try:
+                field.strptime(value, "%Y-%m-%d")
+            except ValueError:
+                print(f"Error: {field.replace('_', ' ').title()} must be in YYYY-MM-DD format.")
+                return
         if value:
             updates.append(f"{field} = %s")
             values.append(value)
@@ -123,14 +152,18 @@ def update_experience(connection):
     if not updates:
         print("No fields to update")
         return
+    try:
+        query = f"UPDATE experience SET {', '.join(updates)} WHERE exp_id = %s"
+        values.append(exp_id)
 
-    query = f"UPDATE experience SET {', '.join(updates)} WHERE id = %s"
-    values.append(experience_id)
+        cursor.execute(query, tuple(values))
+        connection.commit()
+        print("Experience updated successfully")
+    except mysql.connector.Error as err:
+        print(f"Error: {err}")
+    finally:
+        cursor.close()
 
-    cursor.execute(query, tuple(values))
-    connection.commit()
-    print("Experience updated successfully")
-    cursor.close()
 
 def delete_experience(connection):
     cursor = connection.cursor()
@@ -141,12 +174,19 @@ def delete_experience(connection):
         print("Error: Experience ID cannot be empty.")
         return
         
-    query = "DELETE FROM experience WHERE exp_id = %s"
-    cursor.execute(query, (exp_id,))
-    connection.commit()
+    if not exp_id.isdigit():
+        print("Error: Experience ID must be a numeric string.")
+        return
+    try:
+        query = "DELETE FROM experience WHERE exp_id = %s"
+        cursor.execute(query, (exp_id,))
+        connection.commit()
+        print(f"Experience with ID {exp_id} deleted successfully")  
+    except mysql.connector.Error as err:
+        print(f"Error: {err}")
+    finally:
+        cursor.close()
 
-    print(f"Experience with ID {exp_id} deleted successfully")
-    cursor.close()
 
 def experience_menu():
     connection = connect_to_database()
