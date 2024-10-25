@@ -1,6 +1,7 @@
 import mysql.connector
 from tabulate import tabulate
 from db import connect_to_database
+from datetime import datetime
 connection = connect_to_database()
 
 def create_education(connection):
@@ -22,21 +23,66 @@ def create_education(connection):
         print("Error: Course cannot be empty.")
         return 
 
+    try:
+        user_id = int(user_id)
+    except ValueError:
+        print("Error: User ID must be an integer.")
+        return
+
+    try:
+        institution_id = int(institution_id)
+    except ValueError:
+        print("Error: Institution ID must be an integer.")
+        return
+
+    try:
+        start = datetime.strptime(start, "%Y-%m-%d")
+    except ValueError:
+        print("Error: Start date must be in YYYY-MM-DD format.")
+        return
+
+
+    if(end==""):
+        try:
+            query = """INSERT INTO education (user_id, institution_id, start, course)
+                   VALUES (%s, %s, %s, %s)"""
+            values = (user_id, institution_id, start, course)
+            cursor.execute(query, values)
+            connection.commit()
+            education_id = cursor.lastrowid
+            print(f"\nEducation record created successfully with ID: {education_id}")
+        except mysql.connector.Error as err:
+            print(f"Error: {err}")
+        finally:
+            cursor.close()
+        return education_id
+
+    
+    if end:
+        try:
+            end = datetime.strptime(end, "%Y-%m-%d")
+        except ValueError:
+            print("Error: End date must be in YYYY-MM-DD format.")
+            return
+    
     if (end!=""):  
         if start >= end:
             print("Error: Start date must be earlier than end date.")
             return
+    try:
+        query = """INSERT INTO education (user_id, institution_id, start, end, course)
+                   VALUES (%s, %s, %s, %s, %s)"""
+        values = (user_id, institution_id, start, end, course)
+        cursor.execute(query, values)
+        connection.commit()
+        education_id = cursor.lastrowid
+        print(f"\nEducation record created successfully with ID: {education_id}")
+    except mysql.connector.Error as err:
+        print(f"Error: {err}")
+    finally:
+        cursor.close()
+    return education_id
 
-    query = """INSERT INTO education (user_id, institution_id, start, end, course)
-               VALUES (%s, %s, %s, %s, %s)"""
-    values = (user_id, institution_id, start, end, course)
-
-    cursor.execute(query, values)
-    connection.commit()
-    education_id = cursor.lastrowid
-
-    print(f"\nEducation record created successfully with ID: {education_id}")
-    cursor.close()
 
 def read_education(connection):
     cursor = connection.cursor(dictionary=True)
@@ -46,25 +92,32 @@ def read_education(connection):
     if(user_id==""):
         print("Error: User ID cannot be empty.")
         return
-        
-    query = "SELECT * FROM education WHERE user_id = %s"
+    if not user_id.isdigit():
+        print("Error: User ID must be a number.")
+        return
+    try:
+        query = "SELECT * FROM education WHERE user_id = %s"
+        cursor.execute(query, (user_id,))
+        result = cursor.fetchall()
+        if result:
+            print(tabulate(result, headers="keys", tablefmt="grid"))
+        else:
+            print("No education records found for this user.")
+    except mysql.connector.Error as err:
+        print(f"Error: {err}")
+    finally:
+        cursor.close()
 
-    cursor.execute(query, (user_id,))
-    results = cursor.fetchall()
-
-    if results:
-        print(tabulate(results, headers="keys", tablefmt="grid"))
-    else:
-        print("No education records found for this user.")
-
-    cursor.close()
 
 def get_all_education(connection):
     cursor = connection.cursor(dictionary=True)
-
-    query = "SELECT * FROM education"
-    cursor.execute(query)
-    result = cursor.fetchall()
+    try:
+        query = "SELECT * FROM education"
+        cursor.execute(query)
+        result = cursor.fetchall()
+    except mysql.connector.Error as err:
+        print(f"Error: {err}")
+        result = []
 
     if result:
         # Prepare the data for tabulate
@@ -94,28 +147,45 @@ def update_education(connection):
         print("Error: Education ID cannot be empty.")
         return
     
+    if not education_id.isdigit():
+        print("Error: Education ID must be a number.")
+        return
+    
+
     fields = ["user_id", "institution_id", "start_date", "end_date", "course"]
     updates = []
     values = []
-
     for field in fields:
         value = input(f"Enter new {field} (leave blank to skip): ")
         if value:
+            if field in ["user_id", "institution_id"]:
+                if not value.isdigit():
+                    print(f"Error: {field} must be a number.")
+                    return
+                value = int(value)
+            elif field in ["start_date", "end_date"]:
+                try:
+                    value = datetime.strptime(value, "%Y-%m-%d")
+                except ValueError:
+                    print(f"Error: {field} must be in YYYY-MM-DD format.")
+                    return
             updates.append(f"{field} = %s")
             values.append(value)
+
 
     if not updates:
         print("No fields to update")
         return
-
-    query = f"UPDATE education SET {', '.join(updates)} WHERE id = %s"
-    values.append(education_id)
-
-    cursor.execute(query, tuple(values))
-    connection.commit()
-
-    print("\nEducation record updated successfully")
-    cursor.close()
+    try:
+        query = f"UPDATE education SET {', '.join(updates)} WHERE id = %s"
+        values.append(education_id)
+        cursor.execute(query, tuple(values))
+        connection.commit()
+        print("\nEducation record updated successfully")
+    except mysql.connector.Error as err:
+        print(f"Error: {err}")
+    finally:
+        cursor.close()
 
 def delete_education(connection):
     cursor = connection.cursor()
@@ -124,15 +194,19 @@ def delete_education(connection):
     if(education_id==""):
         print("Error: Education ID cannot be empty.")
         return
+    if not education_id.isdigit():
+        print("Error: Education ID must be a number.")
+        return
     
-    query = "DELETE FROM education WHERE id = %s"
-
-    cursor.execute(query, (education_id,))
-    connection.commit()
-
-    print(f"Education record with ID {education_id} deleted successfully")
-    
-    cursor.close()
+    try:
+        query = "DELETE FROM education WHERE id = %s"
+        cursor.execute(query, (education_id,))
+        connection.commit()
+        print("Education record deleted successfully")
+    except mysql.connector.Error as err:
+        print(f"Error: {err}")
+    finally:
+        cursor.close()
 
 def education_menu():
     connection = connect_to_database()
@@ -145,8 +219,8 @@ def education_menu():
         print("1: Create education record")
         print("2: Read education records")
         print("3. Get all education records")
-        print("3: Update education record")
-        print("4: Delete education record")
+        print("4: Update education record")
+        print("5: Delete education record")
         print("0: Exit")
 
         choice = input("\nEnter your choice (0-4): ")
