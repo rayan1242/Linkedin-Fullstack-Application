@@ -134,7 +134,7 @@ def update_user(connection):
                     raise ValueError("Incorrect date format, should be YYYY-MM-DD")
             elif field == "profile_pic":
                 if not value.startswith("http://") and not value.startswith("https://"):
-                    raise ValueError("Profile picture URL must start with http:// or https://")
+                    raise ("Profile picture URL must start with http:// or https://")
             elif field == "age":
                 if not value.isdigit() or int(value) <= 0:
                     raise ValueError("Age must be a positive integer")
