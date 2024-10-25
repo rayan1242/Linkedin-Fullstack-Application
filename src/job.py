@@ -23,19 +23,37 @@ def create_job(connection):
     if(job_type==""):
         print("Error: Type cannot be empty.")
         return
+    try:
+        institution_id = int(institution_id)
+    except ValueError:
+        print("Error: Institution ID must be an integer.")
+        return
 
-    query = """INSERT INTO job (institution_id, job_title, description, type) 
-               VALUES (%s, %s, %s, %s)"""
-    values = (institution_id, job_title, description, job_type)
+    if not isinstance(job_title, str):
+        print("Error: Job title must be a string.")
+        return
 
-    cursor.execute(query, values)
-    connection.commit()
-    job_id = cursor.lastrowid
+    if not isinstance(description, str):
+        print("Error: Description must be a string.")
+        return
 
-    print("\nJob created successfully with ID:", job_id)
-    cursor.close()
-
+    if not isinstance(job_type, str):
+        print("Error: Type must be a string.")
+        return
+    try:
+        query = """INSERT INTO job (institution_id, job_title, description, type)
+                     VALUES (%s, %s, %s, %s)"""
+        values = (institution_id, job_title, description, job_type)
+        cursor.execute(query, values)   
+        connection.commit()
+        job_id = cursor.lastrowid
+    except mysql.connector.Error as err:
+        print(f"Error: {err}")
+    finally:
+        cursor.close()
     return job_id
+
+
 
 def read_job(connection):
     cursor = connection.cursor(dictionary=True)
@@ -45,27 +63,32 @@ def read_job(connection):
     if(job_id==""):
         print("Error: Job ID cannot be empty.")
         return    
-    
-    query = "SELECT * FROM job WHERE job_id = %s"
+    if not job_id.isdigit():
+        print("Error: Job ID must be a number.")
+        return
+    try:
+        query = "SELECT * FROM job WHERE job_id = %s"
+        cursor.execute(query, (job_id,))
+        result = cursor.fetchone()
+        if result:
+                print(tabulate([result], headers="keys", tablefmt="grid"))
+        else:
+            print("Job not found")
+    except mysql.connector.Error as err:
+        print(f"Error: {err}")
+    finally:
+        cursor.close()
 
-    cursor.execute(query, (job_id,))
-    result = cursor.fetchone()
-
-    if result:
-        print(tabulate([result], headers="keys", tablefmt="grid"))
-    else:
-        print("Job not found")
-
-    cursor.close()
 
 def get_all_jobs(connection):
     cursor = connection.cursor(dictionary=True)
-
-    query = """
-    SELECT * FROM job
-    """
-    cursor.execute(query)
-    result = cursor.fetchall()
+    try:
+        query = "SELECT * FROM job"
+        cursor.execute(query)
+        result = cursor.fetchall()
+    except mysql.connector.Error as err:
+        print(f"Error: {err}")
+        result = None
 
     if result:
         # Prepare the data for tabulate
@@ -93,29 +116,41 @@ def update_job(connection):
     if(job_id==""):
         print("Error: Job ID cannot be empty.")
         return
+    if not job_id.isdigit():
+        print("Error: Job ID must be a number.")
+        return
     
     fields = ["institution_id", "job_title", "description", "type"]
     updates = []
     values = []
-
     for field in fields:
         value = input(f"Enter new {field} (leave blank to skip): ")
         if value:
+            if field == "institution_id":
+                try:
+                    value = int(value)
+                except ValueError:
+                    print("Error: Institution ID must be an integer.")
+                    return
             updates.append(f"{field} = %s")
             values.append(value)
 
     if not updates:
         print("No fields to update")
         return
+    try:
+        query = f"UPDATE job SET {', '.join(updates)} WHERE job_id = %s"
+        values.append(job_id)
 
-    query = f"UPDATE job SET {', '.join(updates)} WHERE job_id = %s"
-    values.append(job_id)
+        cursor.execute(query, tuple(values))
+        connection.commit()
 
-    cursor.execute(query, tuple(values))
-    connection.commit()
-
-    print("\nJob updated successfully")
-    cursor.close()
+        print("\nJob updated successfully")
+    except mysql.connector.Error as err:
+        print(f"Error: {err}")
+    finally:
+        cursor.close()
+    
 
 def delete_job(connection):
     cursor = connection.cursor()
@@ -125,15 +160,18 @@ def delete_job(connection):
     if(job_id==""):
         print("Error: Job ID cannot be empty.")
         return
-        
-    query = "DELETE FROM job WHERE job_id = %s"
-
-    cursor.execute(query, (job_id,))
-    connection.commit()
-
-    print("Job deleted successfully")
-
-    cursor.close()
+    if not job_id.isdigit():
+        print("Error: Job ID must be a number.")
+        return
+    try:
+        query = "DELETE FROM job WHERE job_id = %s"
+        cursor.execute(query, (job_id,))
+        connection.commit()
+        print("Job deleted successfully")
+    except mysql.connector.Error as err:
+        print(f"Error: {err}")  
+    finally:
+        cursor.close()
 
 def job_menu():
     connection = connect_to_database()
