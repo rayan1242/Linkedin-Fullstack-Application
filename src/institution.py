@@ -14,62 +14,79 @@ def create_institution(connection):
     location_city = input("Enter city: ")
     location_state = input("Enter state: ")
     location_country = input("Enter country: ")
+    try:
+        no_of_employees = int(no_of_employees)
+    except ValueError:
+        print("Error: Number of employees must be an integer.")
+        return
 
-    if(name==""):
-        print("Error: Name cannot be empty.")
+    if not isinstance(website, str) or not (website.startswith("http://") or website.startswith("https://")):
+        print("Error: Website must be a string and start with 'http://' or 'https://'.")
         return
-    if(location_city==""):
-        print("Error: City cannot be empty.")
-        return
-    if(location_state==""):
-        print("Error: State cannot be empty.")  
-        return
-    if(location_country==""):
-        print("Error: Country cannot be empty.")
-        return
-    if(no_of_employees==""):
-        print("Error: Number of Employees cannot be empty.")
-        return
-    if(industry==""):
-        print("Error: Industry cannot be empty.")
-        return
-    if(website==""):
-        print("Error: Website cannot be empty.")
-        return 
 
-    query = """INSERT INTO institution (no_of_employees, website, industry, name, description, 
-               location_city, location_state, location_country) 
-               VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"""
-    values = (no_of_employees, website, industry, name, description, 
-              location_city, location_state, location_country)
+    if not isinstance(industry, str):
+        print("Error: Industry must be a string.")
+        return
 
-    cursor.execute(query, values)
-    connection.commit()
-    institution_id = cursor.lastrowid
+    if not isinstance(name, str) or not name:
+        print("Error: Name must be a non-empty string.")
+        return
 
-    print("\nInstitution created successfully with ID:", institution_id)
-    cursor.close()
+    if not isinstance(description, str):
+        print("Error: Description must be a string.")
+        return
+
+    if not isinstance(location_city, str) or not location_city:
+        print("Error: City must be a non-empty string.")
+        return
+
+    if not isinstance(location_state, str) or not location_state:
+        print("Error: State must be a non-empty string.")
+        return
+
+    if not isinstance(location_country, str) or not location_country:
+        print("Error: Country must be a non-empty string.")
+        return
+    try:
+        query = """INSERT INTO institution (no_of_employees, website, industry, name, description, 
+                   location_city, location_state, location_country) 
+                   VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"""
+        values = (no_of_employees, website, industry, name, description, 
+                  location_city, location_state, location_country)
+
+        cursor.execute(query, values)
+        connection.commit()
+        institution_id = cursor.lastrowid
+
+        print("\nInstitution created successfully with ID:", institution_id)
+    except mysql.connector.Error as err:
+        print(f"Error: {err}")
+    finally:
+        cursor.close()
     return institution_id
 
 def read_institution(connection):
     cursor = connection.cursor(dictionary=True)
 
     institution_id = input("\nEnter institution ID: ")
-    query = "SELECT * FROM institution WHERE institution_id = %s"
-    
-    if(institution_id==""):
-        print("Error: Institution ID cannot be empty.")
-        return
 
-    cursor.execute(query, (institution_id,))
-    result = cursor.fetchone()
+    if not institution_id.isdigit():
+        print("Error: Institution ID must be a numeric string.")
+        return
+    try:
+        query = "SELECT * FROM institution WHERE institution_id = %s"
+        cursor.execute(query, (institution_id,))
+        result = cursor.fetchone()
+        
+        if result:
+            print(tabulate([result], headers="keys", tablefmt="grid"))
+        else:
+            print("Institution not found")
+    except mysql.connector.Error as err:
+        print(f"Error: {err}")
+    finally:
+        cursor.close()
     
-    if result:
-        print(tabulate([result], headers="keys", tablefmt="grid"))
-    else:
-        print("Institution not found")
-    
-    cursor.close()
 
 def get_all_institutions(connection):
     cursor = connection.cursor(dictionary=True)
@@ -106,33 +123,55 @@ def update_institution(connection):
     
     institution_id = input("\nEnter institution ID to update: ")
     
+
     if(institution_id==""):
         print("Error: Institution ID cannot be empty.")
+        return
+    
+    if not institution_id.isdigit():
+        print("Error: Institution ID must be a numeric string.")
         return
 
     fields = ["no_of_employees", "website", "industry", "name", "description", 
               "location_city", "location_state", "location_country"]
     updates = []
     values = []
-
     for field in fields:
         value = input(f"Enter new {field} (leave blank to skip): ")
         if value:
+            if field == "no_of_employees":
+                try:
+                    value = int(value)
+                except ValueError:
+                    print("Error: Number of employees must be an integer.")
+                    return
+            elif field == "website":
+                if not (value.startswith("http://") or value.startswith("https://")):
+                    print("Error: Website must start with 'http://' or 'https://'.")
+                    return
+            elif field in ["industry", "name", "description", "location_city", "location_state", "location_country"]:
+                if not isinstance(value, str):
+                    print(f"Error: {field} must be a string.")
+                    return
             updates.append(f"{field} = %s")
             values.append(value)
 
     if not updates:
         print("No fields to update")
         return
+    try:
+        query = f"UPDATE institution SET {', '.join(updates)} WHERE institution_id = %s"
+        values.append(institution_id)
 
-    query = f"UPDATE institution SET {', '.join(updates)} WHERE institution_id = %s"
-    values.append(institution_id)
+        cursor.execute(query, tuple(values))
+        connection.commit()
+        
+        print("\nInstitution updated successfully")
+    except mysql.connector.Error as err:
+        print(f"Error: {err}")
+    finally:
+        cursor.close()
 
-    cursor.execute(query, tuple(values))
-    connection.commit()
-    
-    print("\nInstitution updated successfully")
-    cursor.close()
 
 def delete_institution(connection):
     cursor = connection.cursor()
@@ -143,13 +182,19 @@ def delete_institution(connection):
         print("Error: Institution ID cannot be empty.")
         return
     
-    query = "DELETE FROM institution WHERE institution_id = %s"
+    if not institution_id.isdigit():
+        print("Error: Institution ID must be a numeric string.")
+        return
     
-    cursor.execute(query, (institution_id,))
-    connection.commit()
-    
-    print("\nInstitution deleted successfully")
-    cursor.close()
+    try:
+        query = "DELETE FROM institution WHERE institution_id = %s"
+        cursor.execute(query, (institution_id,))
+        connection.commit()
+        print("\nInstitution deleted successfully")
+    except mysql.connector.Error as err:
+        print(f"Error: {err}")
+    finally:
+        cursor.close()
 
 def institution_menu():
     connection = connect_to_database()
