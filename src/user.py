@@ -19,6 +19,11 @@ def create_user(connection):
         return
     # Validate inputs
     try:
+        if len(name) < 2 or len(name) > 20:
+            raise ValueError("Name must be between 2 and 20 characters")
+    except ValueError as e:
+        print(f"An error occurred: {e}")
+    try:
         datetime.datetime.strptime(dob, '%Y-%m-%d')
     except ValueError:
         raise ValueError("Incorrect date format, should be YYYY-MM-DD")
@@ -27,8 +32,8 @@ def create_user(connection):
     except ValueError:
         raise ValueError("Name must be a string")
     
-    if not profile_pic.startswith("http://") and not profile_pic.startswith("https://"):
-        raise ValueError("Profile picture URL must start with http:// or https://")
+    if not profile_pic.endswith(".jpg") and not profile_pic.endswith(".png") and not profile_pic.endswith(".jpeg"):
+        raise ValueError("Profile picture URL must end with .jpg, .png, or .jpeg")
 
     if not name or not location_city or not location_state or not location_country:
         raise ValueError("Name, city, state, and country cannot be empty")
