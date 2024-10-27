@@ -5,38 +5,48 @@ connection = connect_to_database()
 
 # Create user
 def create_user(connection):
-    cursor = connection.cursor()
-
+    cursor = connection.cursor(dictionary=True)
+    
     name = input("\nEnter Full Name: ")
-    dob = input("Enter Date of Birth (YYYY-MM-DD): ")
-    profile_pic = input("Enter Profile Picture URL: ")
-    location_city = input("Enter City: ")
-    location_state = input("Enter State: ")
-    location_country = input("Enter Country: ")
-
-    if not dob or not profile_pic:
-        print("Error: Date of Birth or Profile Picture URL cannot be empty.")
-        return
-    # Validate inputs
     try:
         if len(name) < 2 or len(name) > 20:
             raise ValueError("Name must be between 2 and 20 characters")
     except ValueError as e:
         print(f"An error occurred: {e}")
+        return
+
+    dob = input("Enter Date of Birth (YYYY-MM-DD): ")
+    if not dob:
+        print("Error: Date of Birth cannot be empty.")
+        return
     try:
         datetime.datetime.strptime(dob, '%Y-%m-%d')
     except ValueError:
-        raise ValueError("Incorrect date format, should be YYYY-MM-DD")
-    try:
-        name = str(name)
-    except ValueError:
-        raise ValueError("Name must be a string")
-    
-    if not profile_pic.endswith(".jpg") and not profile_pic.endswith(".png") and not profile_pic.endswith(".jpeg"):
-        raise ValueError("Profile picture URL must end with .jpg, .png, or .jpeg")
+        print("Incorrect date format, should be YYYY-MM-DD")
+        return
 
-    if not name or not location_city or not location_state or not location_country:
-        raise ValueError("Name, city, state, and country cannot be empty")
+    profile_pic = input("Enter Profile Picture URL: ")
+    if not profile_pic:
+        print("Error: Profile Picture URL cannot be empty.")
+        return
+    if not profile_pic.endswith(".jpg") and not profile_pic.endswith(".png") and not profile_pic.endswith(".jpeg"):
+        print("Profile picture URL must end with .jpg, .png, or .jpeg")
+        return
+
+    location_city = input("Enter City: ")
+    if not location_city:
+        print("Error: City cannot be empty.")
+        return
+
+    location_state = input("Enter State: ")
+    if not location_state:
+        print("Error: State cannot be empty.")
+        return
+
+    location_country = input("Enter Country: ")
+    if not location_country:
+        print("Error: Country cannot be empty.")
+        return
 
     try:
         query = """INSERT INTO user (name, dob, profile_pic, location_city, location_state, location_country)
@@ -61,7 +71,17 @@ def read_user(connection):
 
     # Prompt the user for the user ID and remove any leading/trailing whitespace
     user_id = input("Enter user ID: ")
-
+    # Check if the user ID exists
+    try:
+        cursor.execute("SELECT * FROM user WHERE user_id = %s", (user_id,))
+        result = cursor.fetchone()
+        if not result:
+            print("Error: User ID does not exist.")
+            return
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return
+    # Check if the user ID is empty
     if(user_id==""):
         print("Error: User ID cannot be empty.")
         return
@@ -126,7 +146,16 @@ def update_user(connection):
 
     # Prompt the user for the user ID to update
     user_id = input("\nEnter user ID to update: ")
-
+    # Check if the user ID exists
+    try:
+        cursor.execute("SELECT * FROM user WHERE user_id = %s", (user_id,))
+        result = cursor.fetchone()
+        if not result:
+            print("Error: User ID does not exist.")
+            return
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return
     # Check if the user ID is empty
     if(user_id==""):
         print("Error: User ID cannot be empty.")
@@ -143,20 +172,23 @@ def update_user(connection):
     for field in fields:
         value = input(f"Enter new {field} (leave blank to skip): ")
         if value:
-            if field == "dob":
-                try:
+            try:
+                if field == "name":
+                    if len(value) < 2 or len(value) > 20:
+                        raise ValueError("Name must be between 2 and 20 characters")
+                elif field == "dob":
                     datetime.datetime.strptime(value, '%Y-%m-%d')
-                except ValueError:
-                    raise ValueError("Incorrect date format, should be YYYY-MM-DD")
-            elif field == "profile_pic":
-                # Ensure the profile picture URL starts with http:// or https://
-                if not value.startswith("http://") and not value.startswith("https://"):
-                    raise ("Profile picture URL must start with http:// or https://")
-            elif field == "age":
-                if not value.isdigit() or int(value) <= 0:
-                    raise ValueError("Age must be a positive integer")
-            updates.append(f"{field} = %s")
-            values.append(value)
+                elif field == "profile_pic":
+                    if not value.endswith(".jpg") and not value.endswith(".png") and not value.endswith(".jpeg"):
+                        raise ValueError("Profile picture URL must end with .jpg, .png, or .jpeg")
+                elif field == "age":
+                    if not value.isdigit() or int(value) <= 0:
+                        raise ValueError("Age must be a positive integer")
+                updates.append(f"{field} = %s")
+                values.append(value)
+            except ValueError as e:
+                print(f"An error occurred: {e}")
+                return
 
     if not updates:
         print("No fields to update")
@@ -189,24 +221,29 @@ def delete_user(connection):
         print("Error: User ID cannot be empty.")
         return
     if not user_id.isdigit():
-        raise ValueError("User ID must be a digit")
+        print("Error: User ID must be a digit")
+        return
 
     try:
+        # Check if the user ID exists
+        cursor.execute("SELECT * FROM user WHERE user_id = %s", (user_id,))
+        result = cursor.fetchone()
+        if not result:
+            print("Error: User ID does not exist.")
+            return
+
         query = "DELETE FROM user WHERE user_id = %s"
         # Execute the delete query with the provided user ID
         cursor.execute(query, (user_id,))
         connection.commit()
         print("User deleted successfully")
-        
     except Exception as e:
         # Rollback in case of any error during deletion
         connection.rollback()
         print(f"An error occurred: {e}")
-    cursor.execute(query, (user_id))
-    connection.commit()
-    print("User deleted successfully")
-
-    cursor.close()
+        return
+    finally:
+        cursor.close()
 
 # Main function
 def user_menu():
