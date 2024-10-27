@@ -178,30 +178,30 @@ def update_experience(connection):
         cursor.close()
 
 
-    def delete_experience(connection):
-        cursor = connection.cursor()
-        
-        # Prompt the user for the Experience ID to delete
-        exp_id = input("Enter Experience ID to delete: ")
+def delete_experience(connection):
+    cursor = connection.cursor()
+    
+    # Prompt the user for the Experience ID to delete
+    exp_id = input("Enter Experience ID to delete: ")
 
-        # Validate that Experience ID is not empty
-        if(exp_id==""):
-            print("Error: Experience ID cannot be empty.")
-            return
-            
-        # Validate that Experience ID is a numeric string
-        if not exp_id.isdigit():
-            print("Error: Experience ID must be a numeric string.")
-            return
-        try:
-            query = "DELETE FROM experience WHERE exp_id = %s"
-            cursor.execute(query, (exp_id,))
-            connection.commit()
-            print(f"Experience with ID {exp_id} deleted successfully")  
-        except mysql.connector.Error as err:
-            print(f"Error: {err}")
-        finally:
-            cursor.close()
+    # Validate that Experience ID is not empty
+    if(exp_id==""):
+        print("Error: Experience ID cannot be empty.")
+        return
+        
+    # Validate that Experience ID is a numeric string
+    if not exp_id.isdigit():
+        print("Error: Experience ID must be a numeric string.")
+        return
+    try:
+        query = "DELETE FROM experience WHERE exp_id = %s"
+        cursor.execute(query, (exp_id,))
+        connection.commit()
+        print(f"Experience with ID {exp_id} deleted successfully")  
+    except mysql.connector.Error as err:
+        print(f"Error: {err}")
+    finally:
+        cursor.close()
 
 
 def experience_menu():
