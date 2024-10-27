@@ -7,11 +7,13 @@ connection = connect_to_database()
 def create_post(connection):
     cursor = connection.cursor()
 
+    # Prompt the user for input for each field in the post
     user_id = input("\nEnter user ID: ")
     post_content = input("Enter post content: ")
     post_date = input("Enter post date (YYYY-MM-DD): ")
     likes = input("Enter number of likes: ")
     last_liked_at = input("Enter last liked at date (YYYY-MM-DD): ")
+
     # Type check and empty string check
     if not user_id.strip():
         print("User ID cannot be empty.")
@@ -34,6 +36,7 @@ def create_post(connection):
         print("Likes must be an integer.")
         return
 
+    # Validate post_date and last_liked_at as dates in the required format
     try:
         datetime.strptime(post_date, '%Y-%m-%d')
         if last_liked_at.strip():
@@ -41,6 +44,8 @@ def create_post(connection):
     except ValueError:
         print("Date must be in YYYY-MM-DD format.")
         return
+    
+    # Insert the post record into the database
     try:
         query = """INSERT INTO post (user_id, post_content, post_date, likes, last_liked_at)
                      VALUES (%s, %s, %s, %s, %s)"""
@@ -58,14 +63,19 @@ def create_post(connection):
 def read_post(connection):
     cursor = connection.cursor(dictionary=True)
 
+    # Prompt the user for the post ID
     post_id = input("\nEnter post ID: ")
+
+    # Check if post_id is provided and is a valid number
     if not post_id.strip():
         print("Post ID cannot be empty.")
         return
     if not post_id.isdigit():
         print("Post ID must be a number.")
         return
+    
     try:
+        # Define and execute the SQL query to fetch the post with the given ID
         query = "SELECT * FROM post WHERE post_id = %s"
         cursor.execute(query, (post_id,))
         result = cursor.fetchone()
@@ -80,8 +90,11 @@ def read_post(connection):
 
 
 def get_all_posts(connection):
+
+    # Create a cursor object with dictionary=True to retrieve rows as dictionaries
     cursor = connection.cursor(dictionary=True)
     try:
+        # Define the SQL query to join the `post` and `user` tables and retrieve the post details along with the user's name
         query = """
         SELECT p.post_id, u.name AS user_name, p.post_content, p.post_date, p.likes, p.last_liked_at
         FROM post p
@@ -116,6 +129,7 @@ def get_all_posts(connection):
 def update_post(connection):
     cursor = connection.cursor()
 
+    # Prompt user to enter the post ID
     post_id = input("\nEnter post ID to update: ")
     if not post_id.strip():
         print("Post ID cannot be empty.")
@@ -123,11 +137,13 @@ def update_post(connection):
     if not post_id.isdigit():
         print("Post ID must be a number.")
         return
-    
+        
+    # Define the fields that can be updated
     fields = ["user_id", "post_content", "post_date", "likes", "last_liked_at"]
     updates = []
     values = []
 
+    # Iterate over each field and prompt the user for a new value
     for field in fields:
         value = input(f"Enter new {field} (leave blank to skip): ")
         if value:
@@ -146,11 +162,12 @@ def update_post(connection):
             updates.append(f"{field} = %s")
             values.append(value)
         
-
+    # If no fields are provided for updating, exit the function
     if not updates:
         print("No fields to update")
         return
     try:
+        # Build and execute the SQL query dynamically based on user input
         query = f"UPDATE post SET {', '.join(updates)} WHERE post_id = %s"
         values.append(post_id)
         
@@ -165,6 +182,7 @@ def update_post(connection):
 def delete_post(connection):
     cursor = connection.cursor()
 
+    # Prompt user for post ID and check if it is non-empty and numeric  
     post_id = input("\nEnter post ID to delete: ")
     if not post_id.strip():
         print("Post ID cannot be empty.")
@@ -173,6 +191,7 @@ def delete_post(connection):
         print("Post ID must be a number.")
         return
     try:
+        # Prepare and execute the delete query for the specified post ID
         query = "DELETE FROM post WHERE post_id = %s"
         cursor.execute(query, (post_id,))
         connection.commit()

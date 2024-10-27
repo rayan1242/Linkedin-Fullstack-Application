@@ -6,11 +6,13 @@ connection = connect_to_database()
 def create_job(connection):
     cursor = connection.cursor()
 
+    # Prompt the user for job details
     institution_id = input("\nEnter institution ID: ")
     job_title = input("Enter job title: ")
     description = input("Enter description: ")
     job_type = input("Enter type: ")
 
+    # Validate that none of the inputs are empty
     if(institution_id==""):
         print("Error: Institution ID cannot be empty.")
         return
@@ -23,12 +25,15 @@ def create_job(connection):
     if(job_type==""):
         print("Error: Type cannot be empty.")
         return
+    
+    # Convert institution_id to an integer and check for valid type inputs
     try:
         institution_id = int(institution_id)
     except ValueError:
         print("Error: Institution ID must be an integer.")
         return
 
+    # Additional validation checks for data types of the inputs
     if not isinstance(job_title, str):
         print("Error: Job title must be a string.")
         return
@@ -40,7 +45,9 @@ def create_job(connection):
     if not isinstance(job_type, str):
         print("Error: Type must be a string.")
         return
+    
     try:
+        # Prepare and execute the SQL insert query
         query = """INSERT INTO job (institution_id, job_title, description, type)
                      VALUES (%s, %s, %s, %s)"""
         values = (institution_id, job_title, description, job_type)
@@ -58,18 +65,26 @@ def create_job(connection):
 def read_job(connection):
     cursor = connection.cursor(dictionary=True)
 
+    # Prompt the user to enter the job ID
     job_id = input("\nEnter job ID: ")
     
+    # Validate that job ID is not empty
     if(job_id==""):
         print("Error: Job ID cannot be empty.")
         return    
+    
+    # Validate that job ID is a numeric string
     if not job_id.isdigit():
         print("Error: Job ID must be a number.")
         return
+    
     try:
+        # Prepare and execute the SQL query to select the job record with the specified ID
         query = "SELECT * FROM job WHERE job_id = %s"
         cursor.execute(query, (job_id,))
         result = cursor.fetchone()
+
+        # If a job is found, print the job details in a formatted table
         if result:
                 print(tabulate([result], headers="keys", tablefmt="grid"))
         else:
@@ -111,8 +126,10 @@ def get_all_jobs(connection):
 def update_job(connection):
     cursor = connection.cursor()
 
+    # Prompt the user to enter the Job ID for the job to be updated
     job_id = input("\nEnter job ID to update: ")
     
+    # Validate that Job ID is not empty and is a number
     if(job_id==""):
         print("Error: Job ID cannot be empty.")
         return
@@ -120,9 +137,12 @@ def update_job(connection):
         print("Error: Job ID must be a number.")
         return
     
+    # Define the fields that can be updated
     fields = ["institution_id", "job_title", "description", "type"]
     updates = []
     values = []
+
+    # Loop through each field and prompt the user for a new value if they wish to update it
     for field in fields:
         value = input(f"Enter new {field} (leave blank to skip): ")
         if value:
@@ -135,13 +155,17 @@ def update_job(connection):
             updates.append(f"{field} = %s")
             values.append(value)
 
+    # If no fields were updated, exit the function
     if not updates:
         print("No fields to update")
         return
+        
     try:
+        # Prepare the SQL update query
         query = f"UPDATE job SET {', '.join(updates)} WHERE job_id = %s"
         values.append(job_id)
 
+        # Execute the query with the updated values
         cursor.execute(query, tuple(values))
         connection.commit()
 
@@ -155,15 +179,19 @@ def update_job(connection):
 def delete_job(connection):
     cursor = connection.cursor()
 
+    # Prompt the user to enter the Job ID for the job to be deleted
     job_id = input("Enter job ID to delete: ")
     
+    # Validate that Job ID is not empty and is a number
     if(job_id==""):
         print("Error: Job ID cannot be empty.")
         return
     if not job_id.isdigit():
         print("Error: Job ID must be a number.")
         return
+    
     try:
+        # Prepare the SQL delete query to remove the job with the specified ID
         query = "DELETE FROM job WHERE job_id = %s"
         cursor.execute(query, (job_id,))
         connection.commit()

@@ -54,6 +54,7 @@ def create_user(connection):
 def read_user(connection):
     cursor = connection.cursor(dictionary=True)
 
+    # Prompt the user for the user ID and remove any leading/trailing whitespace
     user_id = input("Enter user ID: ")
 
     if(user_id==""):
@@ -63,10 +64,12 @@ def read_user(connection):
         raise ValueError("User ID must be a digit")
 
     try:
+        # Prepare the SQL query to select the user by user ID
         query = "SELECT * FROM user WHERE user_id = %s"
         cursor.execute(query, (user_id,))
         result = cursor.fetchone()
 
+        # Check if a result was found
         if result:
             print(tabulate([result], headers="keys", tablefmt="grid"))
         else:
@@ -82,13 +85,17 @@ def read_user(connection):
 def get_all_users(connection):
     cursor = connection.cursor(dictionary=True)
 
+    # Define the SQL query to select all users from the 'user' table
     query = "SELECT * FROM user"
     cursor.execute(query)
     result = cursor.fetchall()
 
     if result:
         table_data = []
+
+        # Iterate through each user in the result set
         for user in result:
+            # Append user details to the table_data list
             table_data.append([
                 user['user_id'],
                 user['name'],
@@ -100,6 +107,7 @@ def get_all_users(connection):
                 user['location_country']
             ])
 
+        # Print the user data in a formatted table using tabulate
         print(tabulate(table_data, headers=["user_id", "name", "dob", "age", "profile_pic", "location_city", "location_state", "location_country"], tablefmt="grid"))
        
     else:
@@ -111,7 +119,10 @@ def get_all_users(connection):
 def update_user(connection):
     cursor = connection.cursor()
 
+    # Prompt the user for the user ID to update
     user_id = input("\nEnter user ID to update: ")
+
+    # Check if the user ID is empty
     if(user_id==""):
         print("Error: User ID cannot be empty.")
         return
@@ -133,6 +144,7 @@ def update_user(connection):
                 except ValueError:
                     raise ValueError("Incorrect date format, should be YYYY-MM-DD")
             elif field == "profile_pic":
+                # Ensure the profile picture URL starts with http:// or https://
                 if not value.startswith("http://") and not value.startswith("https://"):
                     raise ("Profile picture URL must start with http:// or https://")
             elif field == "age":
@@ -146,8 +158,11 @@ def update_user(connection):
         return
 
     try:
+        # Construct the SQL update query
         query = f"UPDATE user SET {', '.join(updates)} WHERE user_id = %s"
         values.append(user_id)
+
+        # Execute the update query
         cursor.execute(query, tuple(values))
         connection.commit()
         print("\nUser updated successfully")
@@ -161,8 +176,10 @@ def update_user(connection):
 def delete_user(connection):
     cursor = connection.cursor()
 
+    # Prompt the user for the user ID to delete
     user_id = input("Enter user ID to delete: ")
 
+    # Check if the user ID is empty
     if(user_id==""):
         print("Error: User ID cannot be empty.")
         return
@@ -171,10 +188,13 @@ def delete_user(connection):
 
     try:
         query = "DELETE FROM user WHERE user_id = %s"
+        # Execute the delete query with the provided user ID
         cursor.execute(query, (user_id,))
         connection.commit()
         print("User deleted successfully")
+        
     except Exception as e:
+        # Rollback in case of any error during deletion
         connection.rollback()
         print(f"An error occurred: {e}")
     cursor.execute(query, (user_id))

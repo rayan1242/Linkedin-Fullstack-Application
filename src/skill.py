@@ -6,15 +6,20 @@ connection = connect_to_database()
 def create_skill(connection):
     cursor = connection.cursor()
     
+    # Prompt user for skill name and validate it is not empty
     skill_name = input("\nEnter skill name: ")
     if not skill_name:
         print("Error: Skill name cannot be empty.")
         return
+    
     try:
+        # Prepare and execute the SQL INSERT query
         query = "INSERT INTO skill (skill_name) VALUES (%s)"
         values = (skill_name,)
         cursor.execute(query, values)
         connection.commit()
+
+        # Retrieve the ID of the newly created skill
         skill_id = cursor.lastrowid
         print(f"Skill created successfully with ID: {skill_id}")
     except mysql.connector.Error as err:
@@ -26,6 +31,7 @@ def create_skill(connection):
 def read_skill(connection):
     cursor = connection.cursor(dictionary=True)
 
+    # Prompt user for skill ID and validate it is not empty
     skill_id = input("\nEnter skill ID: ")
     if not skill_id:
         print("Error: Skill ID cannot be empty.")
@@ -33,15 +39,20 @@ def read_skill(connection):
     if not skill_id.isdigit():
         print("Error: Skill ID must be a number.")
         return
+    
     try:
+        # Prepare and execute the SQL SELECT query
         query = "SELECT * FROM skill WHERE skill_id = %s"
         cursor.execute(query, (skill_id,))
         result = cursor.fetchone()
+
+        # Check if a result was found and print it
         if result:
             print(tabulate([result], headers="keys", tablefmt="grid"))
         else:
             print("Skill not found")
     except mysql.connector.Error as err:
+        # Handle any database errors
         print(f"Error: {err}")
     finally:
         cursor.close()
@@ -73,6 +84,7 @@ def get_all_skills(connection):
 def update_skill(connection):
     cursor = connection.cursor()
 
+    # Prompt for the skill ID and validate input
     skill_id = input("\nEnter skill ID to update: ")
     if not skill_id:
         print("Error: Skill ID cannot be empty.")
@@ -81,12 +93,16 @@ def update_skill(connection):
         print("Error: Skill ID must be a number.")
         return
     
+    # Prompt for the new skill name
     new_skill_name = input("Enter new skill name (leave blank to skip): ")
 
+    # Check if the new skill name is provided
     if not new_skill_name:
         print("No fields to update")
         return
+    
     try:
+        # Prepare and execute the update query
         query = "UPDATE skill SET skill_name = %s WHERE skill_id = %s"
         values = (new_skill_name, skill_id)
         cursor.execute(query, values)
@@ -101,6 +117,7 @@ def update_skill(connection):
 def delete_skill(connection):
     cursor = connection.cursor()
 
+    # Prompt for the skill ID to delete
     skill_id = input("\nEnter skill ID to delete: ")
     if not skill_id:
         print("Error: Skill ID cannot be empty.")
@@ -108,12 +125,15 @@ def delete_skill(connection):
     if not skill_id.isdigit():
         print("Error: Skill ID must be a number.")
         return
+    
     try:
+        # Prepare and execute the delete query
         query = "DELETE FROM skill WHERE skill_id = %s"
         cursor.execute(query, (skill_id,))
         connection.commit()
         print("\nSkill deleted successfully")
     except mysql.connector.Error as err:
+        # Handle any database errors
         print(f"Error: {err}")
     finally:
         cursor.close()
