@@ -5,9 +5,8 @@ A brief description of your project, what it does, and its purpose.
 ## Table of Contents
 
 1. [Installation](#installation)
-2. [Usage](#usage)
-3. [Steps to Run](#steps-to-run)
-4. [File Description](#file-description)
+2. [Steps to Run](#steps-to-run)
+3. [File Description](#file-description)
 
 ## Installation
 
@@ -21,8 +20,6 @@ A brief description of your project, what it does, and its purpose.
    pip install mysql-connector-python
    pip install tabulate
    ```
-
-## Usage
 
 ## Steps to Run
 
