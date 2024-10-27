@@ -33,7 +33,7 @@ def create_user(connection):
         raise ValueError("Name must be a string")
     
     if not profile_pic.endswith(".jpg") and not profile_pic.endswith(".png") and not profile_pic.endswith(".jpeg"):
-        raise ValueError("Profile picture URL must start with .jpg, .png, or .jpeg")
+        raise ValueError("Profile picture URL must end with .jpg, .png, or .jpeg")
 
     if not name or not location_city or not location_state or not location_country:
         raise ValueError("Name, city, state, and country cannot be empty")
