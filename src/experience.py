@@ -6,6 +6,7 @@ connection = connect_to_database()
 def create_experience(connection):
     cursor = connection.cursor()
 
+    # Prompt the user for input values to create a new experience record
     user_id = input("\nEnter User ID: ")
     institution_id = input("Enter Institution ID: ")
     title = input("Enter Title: ")
@@ -13,6 +14,7 @@ def create_experience(connection):
     end = input("Enter End Date (YYYY-MM-DD): ")
     description = input("Enter Description: ")
 
+    # Validate User ID input
     if not user_id:
         print("Error: User ID cannot be empty.")
         return
@@ -20,6 +22,8 @@ def create_experience(connection):
     if not user_id.isdigit():
         print("Error: User ID must be a number.")
         return
+    
+    # Validate Institution ID input
     if not institution_id.isdigit():
         print("Error: Institution ID must be a number.")
         return
@@ -36,7 +40,7 @@ def create_experience(connection):
         print("Error: User ID cannot be empty.")
         return
 
-    # Error handling for date validation
+    # Check if end date is provided for validation
     if(end==""):
         try:
             query = """INSERT INTO experience (user_id, institution_id, start, description, title)
@@ -52,6 +56,7 @@ def create_experience(connection):
             cursor.close()
         return experience_id
 
+    # Validate that start date is earlier than end date if end date is provided
     if(end!=""):
         if start >= end:
             print("Error: Start date must be earlier than end date.")
@@ -73,16 +78,19 @@ def create_experience(connection):
 def read_experience(connection):
     cursor = connection.cursor(dictionary=True)
 
+    # Prompt the user for the User ID to retrieve experiences
     user_id = input("\nEnter User ID to retrieve experiences: ")
     if(user_id==""):
         print("Error: User ID cannot be empty.")
         return
 
+    # Prepare the SQL query to select experiences for the given user_id
     query = "SELECT * FROM experience WHERE user_id = %s"
 
     cursor.execute(query, (user_id,))
     results = cursor.fetchall()
 
+    # Check if any results were returned
     if results:
         print(tabulate(results, headers="keys", tablefmt="grid"))
     else:
@@ -93,6 +101,7 @@ def read_experience(connection):
 def get_all_experience(connection):
     cursor = connection.cursor(dictionary=True)
 
+    # Prepare the SQL query to select all records from the experience table
     query = "SELECT * FROM experience"
     cursor.execute(query)
     result = cursor.fetchall()
@@ -120,8 +129,10 @@ def get_all_experience(connection):
 def update_experience(connection):
     cursor = connection.cursor()
 
+    # Prompt the user for the Experience ID to update
     exp_id = input("Enter Experience ID to update: ")
     
+    # Validate that Experience ID is not empty
     if(exp_id==""):
         print("Error: Experience ID cannot be empty.")
         return  
@@ -129,11 +140,12 @@ def update_experience(connection):
         print("Error: Experience ID must be a numeric string.")
         return  
 
-    
+    # Define the fields that can be updated    
     fields = ["user_id", "institution_id", "title", "company", "location", "start", "end", "description"]
     updates = []
     values = []
 
+    # Loop through each field to prompt for new values
     for field in fields:
         value = input(f"Enter new {field} (leave blank to skip): ")
         if field in ["user_id", "institution_id"] and value and not value.isdigit():
@@ -149,6 +161,7 @@ def update_experience(connection):
             updates.append(f"{field} = %s")
             values.append(value)
 
+    # If no updates are provided, notify the user and exit
     if not updates:
         print("No fields to update")
         return
@@ -165,27 +178,30 @@ def update_experience(connection):
         cursor.close()
 
 
-def delete_experience(connection):
-    cursor = connection.cursor()
-    
-    exp_id = input("Enter Experience ID to delete: ")
-
-    if(exp_id==""):
-        print("Error: Experience ID cannot be empty.")
-        return
+    def delete_experience(connection):
+        cursor = connection.cursor()
         
-    if not exp_id.isdigit():
-        print("Error: Experience ID must be a numeric string.")
-        return
-    try:
-        query = "DELETE FROM experience WHERE exp_id = %s"
-        cursor.execute(query, (exp_id,))
-        connection.commit()
-        print(f"Experience with ID {exp_id} deleted successfully")  
-    except mysql.connector.Error as err:
-        print(f"Error: {err}")
-    finally:
-        cursor.close()
+        # Prompt the user for the Experience ID to delete
+        exp_id = input("Enter Experience ID to delete: ")
+
+        # Validate that Experience ID is not empty
+        if(exp_id==""):
+            print("Error: Experience ID cannot be empty.")
+            return
+            
+        # Validate that Experience ID is a numeric string
+        if not exp_id.isdigit():
+            print("Error: Experience ID must be a numeric string.")
+            return
+        try:
+            query = "DELETE FROM experience WHERE exp_id = %s"
+            cursor.execute(query, (exp_id,))
+            connection.commit()
+            print(f"Experience with ID {exp_id} deleted successfully")  
+        except mysql.connector.Error as err:
+            print(f"Error: {err}")
+        finally:
+            cursor.close()
 
 
 def experience_menu():

@@ -5,14 +5,17 @@ from datetime import datetime
 connection = connect_to_database()
 
 def create_education(connection):
+    # Create a cursor to execute SQL commands
     cursor = connection.cursor()
 
+    # Prompt the user for education details
     user_id = input("\nEnter User ID: ")
     institution_id = input("Enter Institution ID: ")
     start = input("Enter Start Date (YYYY-MM-DD): ")
     end = input("Enter End Date (YYYY-MM-DD): ")
     course = input("Enter Course: ")
 
+    # Validate that user ID, start date, and course are provided
     if(user_id==""):
         print("Error: User ID cannot be empty.")
         return
@@ -23,25 +26,28 @@ def create_education(connection):
         print("Error: Course cannot be empty.")
         return 
 
+    # Validate user ID as an integer
     try:
         user_id = int(user_id)
     except ValueError:
         print("Error: User ID must be an integer.")
         return
 
+    # Validate institution ID as an integer
     try:
         institution_id = int(institution_id)
     except ValueError:
         print("Error: Institution ID must be an integer.")
         return
 
+    # Validate start date format
     try:
         start = datetime.strptime(start, "%Y-%m-%d")
     except ValueError:
         print("Error: Start date must be in YYYY-MM-DD format.")
         return
 
-
+    # If end date is empty, insert record without it
     if(end==""):
         try:
             query = """INSERT INTO education (user_id, institution_id, start, course)
@@ -85,10 +91,13 @@ def create_education(connection):
 
 
 def read_education(connection):
+    # Create a cursor to execute SQL commands with dictionary results for easier handling
     cursor = connection.cursor(dictionary=True)
 
+    # Prompt the user for the user ID to retrieve education records
     user_id = input("\nEnter User ID to retrieve education records: ")
     
+    # Validate that user_id is provided and is numeric
     if(user_id==""):
         print("Error: User ID cannot be empty.")
         return
@@ -110,15 +119,19 @@ def read_education(connection):
 
 
 def get_all_education(connection):
+    # Create a cursor to execute SQL commands with dictionary results for easy access to column names
     cursor = connection.cursor(dictionary=True)
     try:
         query = "SELECT * FROM education"
         cursor.execute(query)
         result = cursor.fetchall()
+    
+    # Handle any database errors that occur during retrieval
     except mysql.connector.Error as err:
         print(f"Error: {err}")
         result = []
 
+    # Check if there are any records to display
     if result:
         # Prepare the data for tabulate
         table_data = []
@@ -141,8 +154,10 @@ def get_all_education(connection):
 def update_education(connection):
     cursor = connection.cursor()
 
+    # Prompt the user for the education ID to update
     education_id = input("Enter Education ID to update: ")
     
+    # Validate that education_id is provided and is numeric
     if(education_id==""):
         print("Error: Education ID cannot be empty.")
         return
@@ -151,7 +166,7 @@ def update_education(connection):
         print("Error: Education ID must be a number.")
         return
     
-
+    # Define the fields that can be updated
     fields = ["user_id", "institution_id", "start_date", "end_date", "course"]
     updates = []
     values = []
@@ -172,10 +187,12 @@ def update_education(connection):
             updates.append(f"{field} = %s")
             values.append(value)
 
-
+    # Check if there are any fields to update
     if not updates:
         print("No fields to update")
         return
+    
+    # Attempt to update the education record in the database
     try:
         query = f"UPDATE education SET {', '.join(updates)} WHERE id = %s"
         values.append(education_id)
@@ -188,9 +205,13 @@ def update_education(connection):
         cursor.close()
 
 def delete_education(connection):
+    # Create a cursor to execute SQL commands
     cursor = connection.cursor()
     
+    # Prompt the user for the education ID to delete
     education_id = input("Enter Education ID to delete: ")
+
+    # Validate that education_id is provided and is numeric
     if(education_id==""):
         print("Error: Education ID cannot be empty.")
         return
@@ -198,6 +219,7 @@ def delete_education(connection):
         print("Error: Education ID must be a number.")
         return
     
+    # Attempt to delete the education record from the database
     try:
         query = "DELETE FROM education WHERE id = %s"
         cursor.execute(query, (education_id,))
@@ -211,6 +233,7 @@ def delete_education(connection):
 def education_menu():
     connection = connect_to_database()
 
+    # Exit if the connection to the database was unsuccessful
     if not connection:
         return
 
