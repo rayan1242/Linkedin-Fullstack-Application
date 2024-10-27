@@ -19,6 +19,11 @@ def create_user(connection):
         return
     # Validate inputs
     try:
+        if len(name) < 2 or len(name) > 20:
+            raise ValueError("Name must be between 2 and 20 characters")
+    except ValueError as e:
+        print(f"An error occurred: {e}")
+    try:
         datetime.datetime.strptime(dob, '%Y-%m-%d')
     except ValueError:
         raise ValueError("Incorrect date format, should be YYYY-MM-DD")
