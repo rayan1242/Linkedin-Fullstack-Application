@@ -1,173 +1,130 @@
 import mysql.connector
-from tabulate import tabulate
 from db import connect_to_database
+
 connection = connect_to_database()
 
-def create_skill(connection):
-    cursor = connection.cursor()
+def create_skill(skill_data,connection):
+    cursor = connection.cursor(dictionary=True)
     
-    # Prompt user for skill name and validate it is not empty
-    skill_name = input("\nEnter skill name: ")
+    skill_name = skill_data.get("skill_name")
+    
     if not skill_name:
-        print("Error: Skill name cannot be empty.")
-        return
+        return {"status": "error", "message": "Skill name cannot be empty."}
     
     try:
-        # Prepare and execute the SQL INSERT query
         query = "INSERT INTO skill (skill_name) VALUES (%s)"
         values = (skill_name,)
         cursor.execute(query, values)
         connection.commit()
 
-        # Retrieve the ID of the newly created skill
         skill_id = cursor.lastrowid
-        print(f"Skill created successfully with ID: {skill_id}")
+
+        # Retrieve the created skill data
+        cursor.execute("SELECT * FROM skill WHERE skill_id = %s", (skill_id,))
+        created_skill = cursor.fetchone()
+        return {"status": "success", "skill": created_skill}
     except mysql.connector.Error as err:
-        print(f"Error: {err}")
+        connection.rollback()
+        return {"status": "error", "message": str(err)}
     finally:
         cursor.close()
-    return skill_id
 
-def read_skill(connection):
+def get_skill(skill_id,connection):
     cursor = connection.cursor(dictionary=True)
 
-    # Prompt user for skill ID and validate it is not empty
-    skill_id = input("\nEnter skill ID: ")
-    if not skill_id:
-        print("Error: Skill ID cannot be empty.")
-        return
-    if not skill_id.isdigit():
-        print("Error: Skill ID must be a number.")
-        return
-    
     try:
-        # Prepare and execute the SQL SELECT query
         query = "SELECT * FROM skill WHERE skill_id = %s"
         cursor.execute(query, (skill_id,))
         result = cursor.fetchone()
 
-        # Check if a result was found and print it
         if result:
-            print(tabulate([result], headers="keys", tablefmt="grid"))
+            return {"status": "success", "skill": result}
         else:
-            print("Skill not found")
+            return {"status": "error", "message": "Skill not found"}
     except mysql.connector.Error as err:
-        # Handle any database errors
-        print(f"Error: {err}")
+        return {"status": "error", "message": str(err)}
     finally:
         cursor.close()
 
 def get_all_skills(connection):
     cursor = connection.cursor(dictionary=True)
+
     try:
         query = "SELECT * FROM skill"
         cursor.execute(query)
-        result = cursor.fetchall()
+        results = cursor.fetchall()
+
+        if results:
+            return {"status": "success", "skills": results}
+        else:
+            return {"status": "error", "message": "No skills found"}
     except mysql.connector.Error as err:
-        print(f"Error: {err}")
-        result = []
-
-    if result:
-        # Prepare the data for tabulate
-        table_data = []
-        for record in result:
-            table_data.append([
-                record['skill_id'],
-                record['skill_name']
-            ])
-
-        # Print the table
-        print(tabulate(table_data, headers=["skill_id", "skill_name"], tablefmt="grid"))
-    else:
-        print("No skill records found.")
-
-def update_skill(connection):
-    cursor = connection.cursor()
-
-    # Prompt for the skill ID and validate input
-    skill_id = input("\nEnter skill ID to update: ")
-    if not skill_id:
-        print("Error: Skill ID cannot be empty.")
-        return
-    if not skill_id.isdigit():
-        print("Error: Skill ID must be a number.")
-        return
-    
-    # Prompt for the new skill name
-    new_skill_name = input("Enter new skill name (leave blank to skip): ")
-
-    # Check if the new skill name is provided
-    if not new_skill_name:
-        print("No fields to update")
-        return
-    
-    try:
-        # Prepare and execute the update query
-        query = "UPDATE skill SET skill_name = %s WHERE skill_id = %s"
-        values = (new_skill_name, skill_id)
-        cursor.execute(query, values)
-        connection.commit()
-        print("\nSkill updated successfully")
-    except mysql.connector.Error as err:
-        print(f"Error: {err}")
+        return {"status": "error", "message": str(err)}
     finally:
         cursor.close()
 
+def update_skill(skill_id, update_data,connection):
+    cursor = connection.cursor(dictionary=True)
 
-def delete_skill(connection):
-    cursor = connection.cursor()
-
-    # Prompt for the skill ID to delete
-    skill_id = input("\nEnter skill ID to delete: ")
-    if not skill_id:
-        print("Error: Skill ID cannot be empty.")
-        return
-    if not skill_id.isdigit():
-        print("Error: Skill ID must be a number.")
-        return
-    
     try:
-        # Prepare and execute the delete query
+        cursor.execute("SELECT * FROM skill WHERE skill_id = %s", (skill_id,))
+        result = cursor.fetchone()
+        if not result:
+            return {"status": "error", "message": "Skill ID does not exist."}
+    except mysql.connector.Error as err:
+        return {"status": "error", "message": str(err)}
+
+    fields = ["skill_name"]
+    updates = []
+    values = []
+
+    for field in fields:
+        if field in update_data:
+            value = update_data[field]
+            try:
+                if field == "skill_name":
+                    if not isinstance(value, str) or not value:
+                        raise ValueError("Skill name must be a non-empty string.")
+                updates.append(f"{field} = %s")
+                values.append(value)
+            except ValueError as e:
+                return {"status": "error", "message": str(e)}
+
+    if not updates:
+        return {"status": "error", "message": "No fields to update"}
+
+    try:
+        query = f"UPDATE skill SET {', '.join(updates)} WHERE skill_id = %s"
+        values.append(skill_id)
+
+        cursor.execute(query, tuple(values))
+        connection.commit()
+
+        # Retrieve the updated skill data
+        cursor.execute("SELECT * FROM skill WHERE skill_id = %s", (skill_id,))
+        updated_skill = cursor.fetchone()
+        return {"status": "success", "skill": updated_skill}
+    except mysql.connector.Error as err:
+        connection.rollback()
+        return {"status": "error", "message": str(err)}
+    finally:
+        cursor.close()
+
+def delete_skill(skill_id,connection):
+    cursor = connection.cursor(dictionary=True)
+
+    try:
+        cursor.execute("SELECT * FROM skill WHERE skill_id = %s", (skill_id,))
+        result = cursor.fetchone()
+        if not result:
+            return {"status": "error", "message": "Skill ID does not exist."}
+
         query = "DELETE FROM skill WHERE skill_id = %s"
         cursor.execute(query, (skill_id,))
         connection.commit()
-        print("\nSkill deleted successfully")
+        return {"status": "success", "deleted_skill_id": skill_id}
     except mysql.connector.Error as err:
-        # Handle any database errors
-        print(f"Error: {err}")
+        connection.rollback()
+        return {"status": "error", "message": str(err)}
     finally:
         cursor.close()
-
-
-def skill_menu():
-    connection = connect_to_database()
-    
-    while True:
-        print("\nChoose an operation:")
-        print("1: Create skill")
-        print("2: Read skill")
-        print("3. Get all skill records")
-        print("4: Update skill")
-        print("5: Delete skill")
-        print("0: Exit")
-
-        choice = input("\nEnter your choice (0-4): ")
-
-        if choice == '1':
-            create_skill(connection)
-        elif choice == '2':
-            read_skill(connection)
-        elif choice == '3':
-            get_all_skills(connection)
-        elif choice == '4':
-            update_skill(connection)
-        elif choice == '5':
-            delete_skill(connection)
-        elif choice == '0':
-            connection.close()
-            print("Database Disconnected Successfully!")
-            print("\nExit from Skill Menu.")
-            print("\n      - X - X - X -")
-            return
-        else:
-            print("\nInvalid choice. Please try again.")

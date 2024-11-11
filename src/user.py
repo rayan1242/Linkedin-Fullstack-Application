@@ -1,52 +1,25 @@
 from tabulate import tabulate
 import datetime
-from db import connect_to_database
-connection = connect_to_database()
 
-# Create user
-def create_user(connection):
+
+def create_user(user_data,connection):
     cursor = connection.cursor(dictionary=True)
     
-    name = input("\nEnter Full Name: ")
+    name = user_data.get("name")
+    dob = user_data.get("dob")
+    profile_pic = user_data.get("profile_pic")
+    location_city = user_data.get("location_city")
+    location_state = user_data.get("location_state")
+    location_country = user_data.get("location_country")
+
     try:
         if len(name) < 2 or len(name) > 20:
             raise ValueError("Name must be between 2 and 20 characters")
-    except ValueError as e:
-        print(f"An error occurred: {e}")
-        return
-
-    dob = input("Enter Date of Birth (YYYY-MM-DD): ")
-    if not dob:
-        print("Error: Date of Birth cannot be empty.")
-        return
-    try:
         datetime.datetime.strptime(dob, '%Y-%m-%d')
-    except ValueError:
-        print("Incorrect date format, should be YYYY-MM-DD")
-        return
-
-    profile_pic = input("Enter Profile Picture URL: ")
-    if not profile_pic:
-        print("Error: Profile Picture URL cannot be empty.")
-        return
-    if not profile_pic.endswith(".jpg") and not profile_pic.endswith(".png") and not profile_pic.endswith(".jpeg"):
-        print("Profile picture URL must end with .jpg, .png, or .jpeg")
-        return
-
-    location_city = input("Enter City: ")
-    if not location_city:
-        print("Error: City cannot be empty.")
-        return
-
-    location_state = input("Enter State: ")
-    if not location_state:
-        print("Error: State cannot be empty.")
-        return
-
-    location_country = input("Enter Country: ")
-    if not location_country:
-        print("Error: Country cannot be empty.")
-        return
+        if not profile_pic.endswith(".jpg") and not profile_pic.endswith(".png") and not profile_pic.endswith(".jpeg"):
+            raise ValueError("Profile picture URL must end with .jpg, .png, or .jpeg")
+    except ValueError as e:
+        return {"status": "error", "message": str(e)}
 
     try:
         query = """INSERT INTO user (name, dob, profile_pic, location_city, location_state, location_country)
@@ -57,56 +30,39 @@ def create_user(connection):
         connection.commit()
 
         user_id = cursor.lastrowid
-        print("\nUser created successfully with ID:", user_id)
+
+        # Retrieve the created user data
+        cursor.execute("SELECT * FROM user WHERE user_id = %s", (user_id,))
+        created_user = cursor.fetchone()
+        return {"status": "success", "user": created_user}
     except Exception as e:
         connection.rollback()
-        print(f"An error occurred: {e}")
+        return {"status": "error", "message": str(e)}
     finally:
         cursor.close()
-    return user_id
 
-# Read user
-def read_user(connection):
+def get_user(user_id,connection):
     cursor = connection.cursor(dictionary=True)
 
-    # Prompt the user for the user ID and remove any leading/trailing whitespace
-    user_id = input("Enter user ID: ")
-    # Check if the user ID exists
+    # Check if the user ID is empty
+    if user_id == "":
+        return {"status": "error", "message": "User ID cannot be empty."}
+
     try:
+        # Check if the user ID exists
         cursor.execute("SELECT * FROM user WHERE user_id = %s", (user_id,))
         result = cursor.fetchone()
         if not result:
-            print("Error: User ID does not exist.")
-            return
+            return {"status": "error", "message": "User ID does not exist."}
+        
+        # Return the user data
+        return {"status": "success", "user": result}
     except Exception as e:
-        print(f"An error occurred: {e}")
-        return
-    # Check if the user ID is empty
-    if(user_id==""):
-        print("Error: User ID cannot be empty.")
-        return
-    if not user_id.isdigit():
-        raise ValueError("User ID must be a digit")
-
-    try:
-        # Prepare the SQL query to select the user by user ID
-        query = "SELECT * FROM user WHERE user_id = %s"
-        cursor.execute(query, (user_id,))
-        result = cursor.fetchone()
-
-        # Check if a result was found
-        if result:
-            print(tabulate([result], headers="keys", tablefmt="grid"))
-        else:
-            print("User not found")
-    except Exception as e:
-        print(f"An error occurred: {e}")
+        return {"status": "error", "message": str(e)}
     finally:
         cursor.close()
 
 
-
-# Get all user
 def get_all_users(connection):
     cursor = connection.cursor(dictionary=True)
 
@@ -116,62 +72,49 @@ def get_all_users(connection):
     result = cursor.fetchall()
 
     if result:
-        table_data = []
+        users = []
 
         # Iterate through each user in the result set
         for user in result:
-            # Append user details to the table_data list
-            table_data.append([
-                user['user_id'],
-                user['name'],
-                user['dob'],
-                user['age'],  
-                user['profile_pic'],
-                user['location_city'],
-                user['location_state'],
-                user['location_country']
-            ])
+            # Append user details to the users list
+            users.append({
+                "user_id": user['user_id'],
+                "name": user['name'],
+                "dob": user['dob'],
+                "age": user['age'],
+                "profile_pic": user['profile_pic'],
+                "location_city": user['location_city'],
+                "location_state": user['location_state'],
+                "location_country": user['location_country']
+            })
 
-        # Print the user data in a formatted table using tabulate
-        print(tabulate(table_data, headers=["user_id", "name", "dob", "age", "profile_pic", "location_city", "location_state", "location_country"], tablefmt="grid"))
-       
+        # Return the user data
+        return {"status": "success", "users": users}
     else:
-        print("User not found")
+        return {"status": "error", "message": "No users found"}
 
     cursor.close()
 
-# Update user
-def update_user(connection):
-    cursor = connection.cursor()
+def update_user(user_id, user_data,connection):
+    cursor = connection.cursor(dictionary=True)
 
-    # Prompt the user for the user ID to update
-    user_id = input("\nEnter user ID to update: ")
     # Check if the user ID exists
     try:
         cursor.execute("SELECT * FROM user WHERE user_id = %s", (user_id,))
         result = cursor.fetchone()
         if not result:
-            print("Error: User ID does not exist.")
-            return
+            return {"status": "error", "message": "User ID does not exist."}
     except Exception as e:
-        print(f"An error occurred: {e}")
-        return
-    # Check if the user ID is empty
-    if(user_id==""):
-        print("Error: User ID cannot be empty.")
-        return
-    if not user_id.isdigit():
-        raise ValueError("User ID must be a digit")
+        return {"status": "error", "message": str(e)}
 
     fields = ["name", "dob", "profile_pic", "location_city", "location_state", "location_country"]
     updates = []
     values = []
 
-   
     # Validate and update fields
     for field in fields:
-        value = input(f"Enter new {field} (leave blank to skip): ")
-        if value:
+        if field in user_data:
+            value = user_data[field]
             try:
                 if field == "name":
                     if len(value) < 2 or len(value) > 20:
@@ -187,12 +130,10 @@ def update_user(connection):
                 updates.append(f"{field} = %s")
                 values.append(value)
             except ValueError as e:
-                print(f"An error occurred: {e}")
-                return
+                return {"status": "error", "message": str(e)}
 
     if not updates:
-        print("No fields to update")
-        return
+        return {"status": "error", "message": "No fields to update"}
 
     try:
         # Construct the SQL update query
@@ -202,46 +143,42 @@ def update_user(connection):
         # Execute the update query
         cursor.execute(query, tuple(values))
         connection.commit()
-        print("\nUser updated successfully")
+
+        # Retrieve the updated user data
+        cursor.execute("SELECT * FROM user WHERE user_id = %s", (user_id,))
+        updated_user = cursor.fetchone()
+        return {"status": "success", "user": updated_user}
     except Exception as e:
         connection.rollback()
-        print(f"An error occurred: {e}")
+        return {"status": "error", "message": str(e)}
     finally:
         cursor.close()
 
-# Delete user
-def delete_user(connection):
-    cursor = connection.cursor()
-
-    # Prompt the user for the user ID to delete
-    user_id = input("Enter user ID to delete: ")
+def delete_user(user_id,connection,):
+    cursor = connection.cursor(dictionary=True)
 
     # Check if the user ID is empty
-    if(user_id==""):
-        print("Error: User ID cannot be empty.")
-        return
-    if not user_id.isdigit():
-        print("Error: User ID must be a digit")
-        return
+    if user_id == "":
+        return {"status": "error", "message": "User ID cannot be empty."}
+    if not isinstance(user_id, int):
+        return {"status": "error", "message": "User ID must be an integer"}
 
     try:
         # Check if the user ID exists
         cursor.execute("SELECT * FROM user WHERE user_id = %s", (user_id,))
         result = cursor.fetchone()
         if not result:
-            print("Error: User ID does not exist.")
-            return
+            return {"status": "error", "message": "User ID does not exist."}
 
         query = "DELETE FROM user WHERE user_id = %s"
         # Execute the delete query with the provided user ID
         cursor.execute(query, (user_id,))
         connection.commit()
-        print("User deleted successfully")
+        return {"status": "success", "deleted_user_id": user_id}
     except Exception as e:
         # Rollback in case of any error during deletion
         connection.rollback()
-        print(f"An error occurred: {e}")
-        return
+        return {"status": "error", "message": str(e)}
     finally:
         cursor.close()
 
