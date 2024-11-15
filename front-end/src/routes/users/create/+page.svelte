@@ -1,8 +1,8 @@
-<script>
-    import { onMount } from 'svelte';
+<script lang="ts">
+    import { createUser, type UserParam } from '$lib/api/user';
     import axios from 'axios';
 
-    let userData = {
+    let userData: UserParam = {
         name: '',
         dob: '',
         profile_pic: '',
@@ -15,7 +15,7 @@
 
     const handleSubmit = async () => {
         try {
-            const response = await axios.post('http://localhost:3000/user/create', userData);
+            const response = await createUser(userData)
             if (response.data.status === 'success') {
                 message = 'User created successfully!';
             } else {
