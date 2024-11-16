@@ -1,42 +1,57 @@
 import axios from "axios";
 import type { Job } from "$lib/types";
 
+const api = axios.create({
+  baseURL: "http://localhost:3000",
+});
+
+export type JobParam = Omit<Job, "job_id">;
+
+
 async function getJobs() {
   try {
-    const response = await axios.get("/job");
+    const response = await api.get("/job");
   } catch (error) {
     console.error(error);
   }
 }
 
-async function getJob(job_id: string) {
+export async function getJob(job_id: number) {
   try {
-    const response = await axios.post(`/job/${job_id}`);
+    const response = await api.post(`/job/${job_id}`);
+    return response.data;
   } catch (error) {
     console.error(error);
+    return { status: 'error', message: 'Error getting job.' };
   }
 }
 
-async function createJob(job: Job) {
+export async function createJob(job: JobParam) {
   try {
-    const response = await axios.post("/job/create", job);
+    const response = await api.post("/job/create", job);
+    return response.data;
   } catch (error) {
     console.error(error);
+    return { status: 'error', message: 'Error creating job.' };
   }
 }
 
-async function updateJob(job_id: string, job: Job) {
+export async function updateJob(job_id: number, job: JobParam) {
   try {
-    const response = await axios.put(`/job/${job_id}`, job);
+    const response = await api.put(`/job/${job_id}`, job);
+    return response.data;
   } catch (error) {
     console.error(error);
+    return { status: 'error', message: 'Error updating job.' };
   }
 }
 
-async function deleteJob(job_id: string) {
+export async function deleteJob(job_id: number) {
   try {
-    const response = await axios.delete(`/job/${job_id}`);
+    const response = await api.delete(`/job/${job_id}`);
+    return response.data;
   } catch (error) {
     console.error(error);
+    return { status: 'error', message: 'Error deleting job.' };
   }
 }

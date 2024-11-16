@@ -1,12 +1,10 @@
 <script lang="ts">
-    import { getUser, updateUser, type UserParam } from '$lib/api/user'; 
+    import { getUser, updateUser,  } from '../../../../lib/api/user'; 
     import { onMount } from 'svelte';
 
-    export let data;
-
-    let userId = data.userId
-
-    let userData: UserParam = {
+    let user_Id: number;
+    let userData = {
+        user_Id:0,
         name: '',
         dob: '',
         profile_pic: '',
@@ -19,7 +17,8 @@
 
     onMount(async () => {
         try { 
-            const user = await getUser(userId);
+            const user = await getUser(user_Id);
+
             userData = user;
         } catch(e: any) {
             console.log(e);
@@ -28,7 +27,8 @@
 
     const handleSubmit = async () => {
         try {
-            const response = await updateUser(userId, userData)
+            const response = await updateUser(user_Id, userData)
+
             if (response.data.status === 'success') {
                 message = 'User created successfully!';
             } else {
@@ -42,6 +42,7 @@
 </script>
 
 <form on:submit|preventDefault={handleSubmit}>
+    <input type="number" bind:value={userData.user_Id} placeholder="User ID" />
     <input type="text" bind:value={userData.name} placeholder="Name" />
     <input type="date" bind:value={userData.dob} placeholder="Date of Birth" />
     <input type="text" bind:value={userData.profile_pic} placeholder="Profile Picture URL" />
