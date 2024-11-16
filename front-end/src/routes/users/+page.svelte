@@ -3,102 +3,12 @@
     import { getUsers, deleteUser } from '$lib/api/user';
     import type { User } from '$lib/types';
 
-    let users:User[] = [
-        {
-            user_id: 1,
-            name: "John Doe",
-            dob: "1990-05-15",
-            age: 34,
-            profile_pic: "john.png",
-            location_city: "New York",
-            location_state: "NY",
-            location_country: "USA"
-        },
-        {
-            user_id: 2,
-            name: "Jane Smith",
-            dob: "1988-09-22",
-            age: 36,
-            profile_pic: "jane.png",
-            location_city: "San Francisco",
-            location_state: "CA",
-            location_country: "USA"
-        },
-                {
-            user_id: 3,
-            name: "Jane Smith",
-            dob: "1988-09-22",
-            age: 36,
-            profile_pic: "jane.png",
-            location_city: "San Francisco",
-            location_state: "CA",
-            location_country: "USA"
-        },
-                {
-            user_id: 4,
-            name: "Jane Smith",
-            dob: "1988-09-22",
-            age: 36,
-            profile_pic: "jane.png",
-            location_city: "San Francisco",
-            location_state: "CA",
-            location_country: "USA"
-        },
-                {
-            user_id: 5,
-            name: "Jane Smith",
-            dob: "1988-09-22",
-            age: 36,
-            profile_pic: "jane.png",
-            location_city: "San Francisco",
-            location_state: "CA",
-            location_country: "USA"
-        },
-                {
-            user_id: 6,
-            name: "Jane Smith",
-            dob: "1988-09-22",
-            age: 36,
-            profile_pic: "jane.png",
-            location_city: "San Francisco",
-            location_state: "CA",
-            location_country: "USA"
-        },
-                {
-            user_id: 7,
-            name: "Jane Smith",
-            dob: "1988-09-22",
-            age: 36,
-            profile_pic: "jane.png",
-            location_city: "San Francisco",
-            location_state: "CA",
-            location_country: "USA"
-        },
-                {
-            user_id: 8,
-            name: "Jane Smith",
-            dob: "1988-09-22",
-            age: 36,
-            profile_pic: "jane.png",
-            location_city: "San Francisco",
-            location_state: "CA",
-            location_country: "USA"
-        },
-                {
-            user_id: 9,
-            name: "Jane Smith",
-            dob: "1988-09-22",
-            age: 36,
-            profile_pic: "jane.png",
-            location_city: "San Francisco",
-            location_state: "CA",
-            location_country: "USA"
-        }
-    ];
+    let users:User[] = [];
 
     onMount(async () => {
         try { 
-            users = await getUsers();
+            const response = await getUsers();
+            users = response.users;
         } catch(e: any) {
             console.log(e);
         }
@@ -107,7 +17,7 @@
     const handleDelete = async (user_id: number) => {
         try {
             const response = await deleteUser(user_id as unknown as string)
-            if (response.data.status === 'success') {
+            if (response.status === 'success') {
                 alert('User deleted successfully!');
                 users = users.filter((user) => user.user_id !== user_id);
             } else {
@@ -126,6 +36,12 @@
     <div class="text-lg font-bold">
         users
     </div>
+    <a href="users">
+        <button class="border-2 p-1">go back</button>
+    </a>
+    <a href="users/create">
+        <button class="border-2 p-1">create</button>
+    </a>
     <div class="flex flex-w flex-wrap w-full">
         {#each users as user}
             <div class="m-2 p-2 border-2 w-[20rem]">
@@ -135,8 +51,8 @@
                 <div>Date of Birth: {user.dob}</div>
                 <div>city: {user.location_city}</div>
                 <div>country: {user.location_country}</div>
-                <a href="user/{user.user_id}/update">update</a>
-                <button on:click={() => handleDelete(user.user_id)}>delete</button>
+                <a class="border-2 p-1" href="users/{user.user_id}/update">update</a>
+                <button class="bg-red-500 p-1 text-white" on:click={() => handleDelete(user.user_id)}>delete</button>
             </div>
         {/each}
     </div>

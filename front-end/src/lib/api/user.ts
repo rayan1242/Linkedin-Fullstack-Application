@@ -4,12 +4,12 @@ import type { User } from "$lib/types";
 export type UserParam = Omit<User, "user_id">;
 
 export async function getUsers() {
-  const response = await axios.get("http://localhost:3000/user");
+  const response = await axios.get("http://localhost:3000/users");
   return response.data;
 }
 
 export async function getUser(user_id: string) {
-  const response = await axios.post(`http://localhost:3000/user/${user_id}`);
+  const response = await axios.get(`http://localhost:3000/user/${user_id}`);
   return response.data;
 }
 

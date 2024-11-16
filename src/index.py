@@ -8,9 +8,11 @@ from job import create_job, get_job, update_job, delete_job, get_all_jobs
 from application import create_application, get_application, update_application, delete_application, get_all_applications
 from post import create_post, get_post, update_post, delete_post, get_all_posts
 from skill import create_skill, get_skill, update_skill, delete_skill, get_all_skills
+from flask_cors import CORS
 
 app = Flask(__name__)
 connection = connect_to_database()
+CORS(app)
 
 @app.route('/user/create', methods=['POST'], strict_slashes=False)
 def create_user_route():
@@ -21,12 +23,12 @@ def create_user_route():
 def get_user_route(user_id):
     return get_user(user_id, connection)
 
-@app.route('/user/update/<int:user_id>', methods=['PUT'], strict_slashes=False)
+@app.route('/user/<int:user_id>', methods=['PUT'], strict_slashes=False)
 def update_user_route(user_id):
     user_data = request.json
     return update_user(user_id, user_data, connection)
 
-@app.route('/user/delete/<int:user_id>', methods=['DELETE'], strict_slashes=False)
+@app.route('/user/<int:user_id>', methods=['DELETE'], strict_slashes=False)
 def delete_user_route(user_id):
     return delete_user(user_id, connection)
 
@@ -43,12 +45,12 @@ def create_institution_route():
 def get_institution_route(institution_id):
     return get_institution(institution_id, connection)
 
-@app.route('/institution/update/<int:institution_id>', methods=['PUT'], strict_slashes=False)
+@app.route('/institution/<int:institution_id>', methods=['PUT'], strict_slashes=False)
 def update_institution_route(institution_id):
     institution_data = request.json
     return update_institution(institution_id, institution_data, connection)
 
-@app.route('/institution/delete/<int:institution_id>', methods=['DELETE'], strict_slashes=False)
+@app.route('/institution/<int:institution_id>', methods=['DELETE'], strict_slashes=False)
 def delete_institution_route(institution_id):
     return delete_institution(institution_id, connection)
 
@@ -65,12 +67,12 @@ def create_education_route():
 def get_education_route(education_id):
     return get_education(education_id, connection)
 
-@app.route('/education/update/<int:education_id>', methods=['PUT'], strict_slashes=False)
+@app.route('/education/<int:education_id>', methods=['PUT'], strict_slashes=False)
 def update_education_route(education_id):
     education_data = request.json
     return update_education(education_id, education_data, connection)
 
-@app.route('/education/delete/<int:education_id>', methods=['DELETE'], strict_slashes=False)
+@app.route('/education/<int:education_id>', methods=['DELETE'], strict_slashes=False)
 def delete_education_route(education_id):
     return delete_education(education_id, connection)
 
@@ -87,12 +89,12 @@ def create_experience_route():
 def get_experience_route(experience_id):
     return get_experience(experience_id, connection)
 
-@app.route('/experience/update/<int:experience_id>', methods=['PUT'], strict_slashes=False)
+@app.route('/experience/<int:experience_id>', methods=['PUT'], strict_slashes=False)
 def update_experience_route(experience_id):
     experience_data = request.json
     return update_experience(experience_id, experience_data, connection)
 
-@app.route('/experience/delete/<int:experience_id>', methods=['DELETE'], strict_slashes=False)
+@app.route('/experience/<int:experience_id>', methods=['DELETE'], strict_slashes=False)
 def delete_experience_route(experience_id):
     return delete_experience(experience_id, connection)
 
@@ -109,12 +111,12 @@ def create_job_route():
 def get_job_route(job_id):
     return get_job(job_id, connection)
 
-@app.route('/job/update/<int:job_id>', methods=['PUT'], strict_slashes=False)
+@app.route('/job/<int:job_id>', methods=['PUT'], strict_slashes=False)
 def update_job_route(job_id):
     job_data = request.json
     return update_job(job_id, job_data, connection)
 
-@app.route('/job/delete/<int:job_id>', methods=['DELETE'], strict_slashes=False)
+@app.route('/job/<int:job_id>', methods=['DELETE'], strict_slashes=False)
 def delete_job_route(job_id):
     return delete_job(job_id, connection)
 
@@ -131,12 +133,12 @@ def create_application_route():
 def get_application_route(application_id):
     return get_application(application_id, connection)
 
-@app.route('/application/update/<int:application_id>', methods=['PUT'], strict_slashes=False)
+@app.route('/application/<int:application_id>', methods=['PUT'], strict_slashes=False)
 def update_application_route(application_id):
     application_data = request.json
     return update_application(application_id, application_data, connection)
 
-@app.route('/application/delete/<int:application_id>', methods=['DELETE'], strict_slashes=False)
+@app.route('/application/<int:application_id>', methods=['DELETE'], strict_slashes=False)
 def delete_application_route(application_id):
     return delete_application(application_id, connection)
 
@@ -153,12 +155,12 @@ def create_post_route():
 def get_post_route(post_id):
     return get_post(post_id, connection)
 
-@app.route('/post/update/<int:post_id>', methods=['PUT'], strict_slashes=False)
+@app.route('/post/<int:post_id>', methods=['PUT'], strict_slashes=False)
 def update_post_route(post_id):
     post_data = request.json
     return update_post(post_id, post_data, connection)
 
-@app.route('/post/delete/<int:post_id>', methods=['DELETE'], strict_slashes=False)
+@app.route('/post/<int:post_id>', methods=['DELETE'], strict_slashes=False)
 def delete_post_route(post_id):
     return delete_post(post_id, connection)
 
@@ -175,12 +177,12 @@ def create_skill_route():
 def get_skill_route(skill_id):
     return get_skill(skill_id, connection)
 
-@app.route('/skill/update/<int:skill_id>', methods=['PUT'], strict_slashes=False)
+@app.route('/skill/<int:skill_id>', methods=['PUT'], strict_slashes=False)
 def update_skill_route(skill_id):
     skill_data = request.json
     return update_skill(skill_id, skill_data, connection)
 
-@app.route('/skill/delete/<int:skill_id>', methods=['DELETE'], strict_slashes=False)
+@app.route('/skill/<int:skill_id>', methods=['DELETE'], strict_slashes=False)
 def delete_skill_route(skill_id):
     return delete_skill(skill_id, connection)
 
