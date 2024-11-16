@@ -1,6 +1,6 @@
 from tabulate import tabulate
 import datetime
-
+from db import connect_to_database
 
 def create_user(user_data,connection):
     cursor = connection.cursor(dictionary=True)
@@ -156,7 +156,7 @@ def update_user(user_id, user_data,connection):
 
 def delete_user(user_id,connection,):
     cursor = connection.cursor(dictionary=True)
-
+    
     # Check if the user ID is empty
     if user_id == "":
         return {"status": "error", "message": "User ID cannot be empty."}
@@ -182,37 +182,3 @@ def delete_user(user_id,connection,):
     finally:
         cursor.close()
 
-# Main function
-def user_menu():
-    connection = connect_to_database()
-
-    while True:
-        print("\nChoose an operation:")
-        print("1: Create a New User.")
-        print("2: Read an Existing User.")
-        print("3: Update Existing user's Data.")
-        print("4: Delete a User.")
-        print("5: Get all Users.")
-        print("0: Exit")
-
-        choice = input("\nEnter your choice (0-5): ")
-
-        if choice == '1':
-            create_user(connection)
-        elif choice == '2':
-            read_user(connection)
-        elif choice == '3':
-            update_user(connection)
-        elif choice == '4':
-            delete_user(connection)
-        elif choice == '5':
-            get_all_users(connection)
-        elif choice == '0':
-            connection.close()
-            print("Database Disconnected Successfully!")
-            print("\nExit from User Menu.")
-            print("\n      - X - X - X -")
-            return
-        else:
-            print("\nInvalid choice. Please try again.")
-            user_menu()

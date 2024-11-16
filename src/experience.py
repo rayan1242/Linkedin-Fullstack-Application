@@ -1,5 +1,6 @@
 import mysql.connector
 from db import connect_to_database
+from datetime import datetime
 
 connection = connect_to_database()
 

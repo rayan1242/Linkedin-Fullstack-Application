@@ -1,48 +1,47 @@
 import axios from "axios";
 import type { Application } from "$lib/types";
 
-async function getApplications() {
-  try {
-    const response = await axios.get("/application");
-  } catch (error) {
-    console.error(error);
-  }
+const api = axios.create({
+  baseURL: "http://localhost:3000",
+});
+
+export type ApplicationParam = Pick<
+  Application,
+  "user_id" | "job_id" | "application_status" | "application_date"
+>;
+
+
+export async function getApplications(): Promise<Application> {
+  const response = await api.get("/application");
+  return response.data;
 }
 
-async function getApplication(application_id: string) {
-  try {
-    const response = await axios.post(`/application/${application_id}`);
-  } catch (error) {
-    console.error(error);
-  }
+export async function getApplication(
+  application_id: number
+): Promise<Application> {
+  const response = await api.post(`/application/${application_id}`);
+  return response.data;
 }
 
-async function createApplication(application: Application) {
-  try {
-    const response = await axios.post("/application/create", application);
-  } catch (error) {
-    console.error(error);
-  }
+export async function createApplication(
+  applicationParam: ApplicationParam
+): Promise<Application> {
+  const response = await api.post("/application/create", applicationParam);
+  return response.data;
 }
 
-async function updateApplication(
-  application_id: string,
-  application: Application
-) {
-  try {
-    const response = await axios.put(
-      `/application/${application_id}`,
-      application
-    );
-  } catch (error) {
-    console.error(error);
-  }
+export async function updateApplication(
+  application_id: number,
+  applicationParam: ApplicationParam
+): Promise<Application> {
+  const response = await api.put(
+    `/application/${application_id}`,
+    applicationParam
+  );
+  return response.data;
 }
 
-async function deleteApplication(application_id: string) {
-  try {
-    const response = await axios.delete(`/application/${application_id}`);
-  } catch (error) {
-    console.error(error);
-  }
+export async function deleteApplication(application_id: number) {
+  const response = await api.delete(`/application/${application_id}`);
+  return response.data;
 }

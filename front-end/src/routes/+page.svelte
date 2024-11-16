@@ -1,15 +1,22 @@
 <script>
-    import CreateUser from '../routes/CreateUser.svelte';
-    import UserList from '../routes/UserList.svelte';
-    import UpdateUser from '../routes/UpdateUser.svelte';
-    import DeleteUser from '../routes/DeleteUser.svelte';
   </script>
   
   <main>
-    <h1>CRUD Application</h1>
-    <CreateUser />
-    <UserList />
-    <UpdateUser userId={1} /> <!-- Replace with dynamic user ID -->
-    <DeleteUser userId={1} /> <!-- Replace with dynamic user ID -->
+    <nav>
+      <a href="users">Users</a>
+      <a href="/users/create">Create User</a>
+      <a href="users/delete">Delete User</a>
+      <a href="users/read">Read User</a>
+      <a href="users/update">Update User</a>
+      <a href="users">Posts</a>
+      <a href="users">Jobs</a>
+      <a href="users">Institutions</a>
+    </nav>
+    <nav>
+      <a href="institution/create">Create Institution</a>
+      <a href="institution/delete">Delete Institution</a>
+      <a href="institution/read">Read Institution</a>
+      <a href="institution/update">Update Institution</a> //is this one correct?
+    </nav>
   </main>
 
