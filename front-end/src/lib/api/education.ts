@@ -1,42 +1,40 @@
 import axios from "axios";
 import type { Education } from "$lib/types";
 
-async function getEducations() {
-  try {
-    const response = await axios.get("/education");
-  } catch (error) {
-    console.error(error);
-  }
+export async function getEducations() {
+  const response = await axios.get("http://localhost:3000/education");
+  return response.data;
 }
 
-async function getEducation(education_id: string) {
-  try {
-    const response = await axios.post(`/education/${education_id}`);
-  } catch (error) {
-    console.error(error);
-  }
+export async function getEducation(education_id: string) {
+  const response = await axios.post(
+    `http://localhost:3000/education/${education_id}`
+  );
+  return response.data;
 }
 
-async function createEducation(education: Education) {
-  try {
-    const response = await axios.post("/education/create", education);
-  } catch (error) {
-    console.error(error);
-  }
+export async function createEducation(education: Education) {
+  const response = await axios.post(
+    "http://localhost:3000/education/create",
+    education
+  );
+  return response.data;
 }
 
-async function updateEducation(education_id: string, education: Education) {
-  try {
-    const response = await axios.put(`/education/${education_id}`, education);
-  } catch (error) {
-    console.error(error);
-  }
+export async function updateEducation(
+  education_id: string,
+  education: Education
+) {
+  const response = await axios.put(
+    `http://localhost:3000/education/${education_id}`,
+    education
+  );
+  return response.data;
 }
 
-async function deleteEducation(education_id: string) {
-  try {
-    const response = await axios.delete(`/education/${education_id}`);
-  } catch (error) {
-    console.error(error);
-  }
+export async function deleteEducation(education_id: string) {
+  const response = await axios.delete(
+    `http://localhost:3000/education/${education_id}`
+  );
+  return response.data;
 }

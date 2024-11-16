@@ -1,42 +1,30 @@
 import axios from "axios";
 import type { Post } from "$lib/types";
 
-async function getPosts() {
-  try {
-    const response = await axios.get("/post");
-  } catch (error) {
-    console.error(error);
-  }
+export async function getPosts() {
+  const response = await axios.get("http://localhost:3000/post");
+  return response.data;
 }
 
-async function getPost(post_id: string) {
-  try {
-    const response = await axios.post(`/post/${post_id}`);
-  } catch (error) {
-    console.error(error);
-  }
+export async function getPost(post_id: string) {
+  const response = await axios.post(`http://localhost:3000/post/${post_id}`);
+  return response.data;
 }
 
-async function createPost(post: Post) {
-  try {
-    const response = await axios.post("/post/create", post);
-  } catch (error) {
-    console.error(error);
-  }
+export async function createPost(post: Post) {
+  const response = await axios.post("http://localhost:3000/post/create", post);
+  return response.data;
 }
 
-async function updatePost(post_id: string, post: Post) {
-  try {
-    const response = await axios.put(`/post/${post_id}`, post);
-  } catch (error) {
-    console.error(error);
-  }
+export async function updatePost(post_id: string, post: Post) {
+  const response = await axios.put(
+    `http://localhost:3000/post/${post_id}`,
+    post
+  );
+  return response.data;
 }
 
-async function deletePost(post_id: string) {
-  try {
-    const response = await axios.delete(`/post/${post_id}`);
-  } catch (error) {
-    console.error(error);
-  }
+export async function deletePost(post_id: string) {
+  const response = await axios.delete(`http://localhost:3000/post/${post_id}`);
+  return response.data;
 }
