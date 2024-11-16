@@ -3,6 +3,7 @@
     import { getUsers, deleteUser } from '../../lib/api/user';
     import type { User } from '../../lib/types';
 
+
     let users:User[] = [
         {
             user_id: 1,
@@ -107,6 +108,7 @@
     const handleDelete = async (user_id: number) => {
         try {
             const response = await deleteUser(user_id as unknown as number)
+
             if (response.data.status === 'success') {
                 alert('User deleted successfully!');
                 users = users.filter((user) => user.user_id !== user_id);

@@ -18,6 +18,7 @@
     onMount(async () => {
         try { 
             const user = await getUser(user_Id);
+
             userData = user;
         } catch(e: any) {
             console.log(e);
@@ -27,6 +28,7 @@
     const handleSubmit = async () => {
         try {
             const response = await updateUser(user_Id, userData)
+
             if (response.data.status === 'success') {
                 message = 'User created successfully!';
             } else {

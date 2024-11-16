@@ -14,6 +14,7 @@ export async function getUsers() {
 
 export async function getUser(user_id: number) {
   const response = await api.post(`/user/${user_id}`);
+
   return response.data;
 }
 
@@ -29,5 +30,6 @@ export async function updateUser(user_id: number, user: UserParam) {
 
 export async function deleteUser(user_id: number) {
   const response = await api.delete(`/user/${user_id}`);
+
   return response.data;
 }

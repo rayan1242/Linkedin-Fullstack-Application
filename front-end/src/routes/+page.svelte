@@ -8,6 +8,7 @@
       <a href="users/delete">Delete User</a>
       <a href="users/read">Read User</a>
       <a href="users/update">Update User</a>
+
       <a href="users">Posts</a>
       <a href="users">Jobs</a>
       <a href="users">Institutions</a>
@@ -18,5 +19,6 @@
       <a href="institution/read">Read Institution</a>
       <a href="institution/update">Update Institution</a> //is this one correct?
     </nav>
+
   </main>
 

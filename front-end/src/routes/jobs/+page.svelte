@@ -1,7 +1,6 @@
-<script lang="ts">
 
-</script>
+<script lang="ts"></script>
 
 <div>
-    Institutions
+    jobs
 </div>
