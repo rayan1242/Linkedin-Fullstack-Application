@@ -36,10 +36,10 @@ def create_experience(experience_data,connection):
 
         cursor.execute(query, values)
         connection.commit()
-        experience_id = cursor.lastrowid
+        exp_id = cursor.lastrowid
 
         # Retrieve the created experience data
-        cursor.execute("SELECT * FROM experience WHERE experience_id = %s", (experience_id,))
+        cursor.execute("SELECT * FROM experience WHERE experience_id = %s", (exp_id,))
         created_experience = cursor.fetchone()
         return {"status": "success", "experience": created_experience}
     except mysql.connector.Error as err:
@@ -82,11 +82,11 @@ def get_all_experiences(connection):
     finally:
         cursor.close()
 
-def update_experience(experience_id, update_data,connection):
+def update_experience(exp_id, update_data,connection):
     cursor = connection.cursor(dictionary=True)
 
     try:
-        cursor.execute("SELECT * FROM experience WHERE experience_id = %s", (experience_id,))
+        cursor.execute("SELECT * FROM experience WHERE experience_id = %s", (exp_id,))
         result = cursor.fetchone()
         if not result:
             return {"status": "error", "message": "Experience ID does not exist."}
@@ -122,13 +122,13 @@ def update_experience(experience_id, update_data,connection):
 
     try:
         query = f"UPDATE experience SET {', '.join(updates)} WHERE experience_id = %s"
-        values.append(experience_id)
+        values.append(exp_id)
 
         cursor.execute(query, tuple(values))
         connection.commit()
 
         # Retrieve the updated experience data
-        cursor.execute("SELECT * FROM experience WHERE experience_id = %s", (experience_id,))
+        cursor.execute("SELECT * FROM experience WHERE experience_id = %s", (exp_id,))
         updated_experience = cursor.fetchone()
         return {"status": "success", "experience": updated_experience}
     except mysql.connector.Error as err:
@@ -137,19 +137,19 @@ def update_experience(experience_id, update_data,connection):
     finally:
         cursor.close()
 
-def delete_experience( experience_id,connection):
+def delete_experience( exp_id,connection):
     cursor = connection.cursor(dictionary=True)
 
     try:
-        cursor.execute("SELECT * FROM experience WHERE experience_id = %s", (experience_id,))
+        cursor.execute("SELECT * FROM experience WHERE experience_id = %s", (exp_id,))
         result = cursor.fetchone()
         if not result:
             return {"status": "error", "message": "Experience ID does not exist."}
 
         query = "DELETE FROM experience WHERE experience_id = %s"
-        cursor.execute(query, (experience_id,))
+        cursor.execute(query, (exp_id,))
         connection.commit()
-        return {"status": "success", "deleted_experience_id": experience_id}
+        return {"status": "success", "deleted_experience_id": exp_id}
     except mysql.connector.Error as err:
         connection.rollback()
         return {"status": "error", "message": str(err)}
