@@ -37,4 +37,5 @@ export async function deleteInstitution(institution_id: string) {
     `http://localhost:3000/institution/${institution_id}`
   );
   return response.data;
+
 }

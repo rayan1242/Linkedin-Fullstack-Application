@@ -32,4 +32,5 @@ export async function deleteSkill(skill_id: string) {
     `http://localhost:3000/skill/${skill_id}`
   );
   return response.data;
+
 }

@@ -1,4 +1,5 @@
 from flask import Flask, request
+from flask_cors import CORS
 from db import connect_to_database
 from user import create_user, get_user, update_user, delete_user, get_all_users
 from institution import create_institution, get_institution, update_institution, delete_institution, get_all_institutions
@@ -13,6 +14,7 @@ from flask_cors import CORS
 app = Flask(__name__)
 connection = connect_to_database()
 CORS(app)
+
 
 @app.route('/user/create', methods=['POST'], strict_slashes=False)
 def create_user_route():

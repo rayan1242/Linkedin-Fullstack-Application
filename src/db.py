@@ -12,3 +12,5 @@ def connect_to_database():
     except mysql.connector.Error as err:
         print(f"Error connecting to the database: {err}")
         return None
+    
+__all__ = ['connect_to_database']

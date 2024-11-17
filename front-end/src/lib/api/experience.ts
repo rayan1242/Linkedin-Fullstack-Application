@@ -1,6 +1,13 @@
 import axios from "axios";
 import type { Experience } from "$lib/types";
 
+const api = axios.create({
+  baseURL: "http://localhost:3000",
+});
+
+export type ExperienceParams = Omit<Experience, "exp_id">;
+
+
 async function getExperiences() {
   const response = await axios.get("http://localhost:3000/experience");
   return response.data;
@@ -34,4 +41,5 @@ async function deleteExperience(experience_id: string) {
     `http://localhost:3000/experience/${experience_id}`
   );
   return response.data;
+ 
 }

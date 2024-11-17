@@ -1,7 +1,8 @@
 <script lang="ts">
     import { onMount } from 'svelte';
-    import { getUsers, deleteUser } from '$lib/api/user';
-    import type { User } from '$lib/types';
+    import { getUsers, deleteUser } from '../../lib/api/user';
+    import type { User } from '../../lib/types';
+
 
     let users:User[] = [];
 
@@ -18,6 +19,7 @@
         try {
             const response = await deleteUser(user_id as unknown as string)
             if (response.status === 'success') {
+
                 alert('User deleted successfully!');
                 users = users.filter((user) => user.user_id !== user_id);
             } else {

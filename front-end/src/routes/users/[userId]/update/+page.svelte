@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { getUser, updateUser, type UserParam } from '$lib/api/user'; 
+    import { getUser, updateUser,  } from '../../../../lib/api/user'; 
     import { onMount } from 'svelte';
 
     export let data;
@@ -31,6 +31,7 @@
         try {
             const response = await updateUser(userId, userData)
             if (response.status === 'success') {
+
                 message = 'User created successfully!';
             } else {
                 message = `Error: ${response.message}`;
@@ -75,6 +76,7 @@
         <button type="submit">Update User</button>
     </form>
 </div>
+
 
 {#if message}
     <p>{message}</p>

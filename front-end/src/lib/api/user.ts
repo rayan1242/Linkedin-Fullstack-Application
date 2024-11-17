@@ -1,5 +1,9 @@
 import axios from "axios";
-import type { User } from "$lib/types";
+import type { User } from "../types";
+
+const api = axios.create({
+  baseURL: "http://localhost:3000",
+});
 
 export type UserParam = Omit<User, "user_id">;
 
