@@ -1,3 +1,4 @@
+import mysql.connector
 from db import connect_to_database
         
 connection = connect_to_database();
@@ -62,7 +63,8 @@ ORDER BY overall_rank, country_rank;"""
     except Exception as error:
         return {"status": "error", "message": str(error)};
     finally:
-        cursor.close()
+        if 'cursor' in locals():
+            cursor.close()
         
 
 def analyze_institution_growth(connection):
@@ -96,35 +98,38 @@ def analyze_institution_growth(connection):
         return {"status": "error", "message": str(error)}
     finally:
         cursor.close()
-
-def getJobRecommendation(connection):
+    
+def getJobRecommendation(connection, user_id):
     try:
+        if(type(user_id) != int):
+            user_id = int(user_id)
         cursor = connection.cursor(dictionary=True)
         query = """SELECT 
-    j.job_id,
-    j.job_title,
-    j.description,
-    j.type,
-    i.name AS institution_name,
-    CONCAT(i.location_city, ', ', i.location_state, ', ', i.location_country) AS institution_location,
-    COUNT(DISTINCT s.skill_id) AS matching_skills
-FROM 
-    job j
-JOIN institution i ON j.institution_id = i.institution_id
-JOIN user_skill us ON us.user_id = 3
-JOIN skill s ON s.skill_id = us.skill_id
-WHERE 
-    LOWER(j.description) LIKE CONCAT('%', LOWER(s.skill_name), '%')
-GROUP BY 
-    j.job_id, j.job_title, j.description, j.type, i.name, 
-    i.location_city, i.location_state, i.location_country
-ORDER BY 
-    matching_skills DESC, j.job_id
-LIMIT 10;"""
-        cursor.execute(query)
+            j.job_id,
+            j.job_title,
+            j.description,
+            j.type,
+            i.name AS institution_name,
+            CONCAT(i.location_city, ', ', i.location_state, ', ', i.location_country) AS institution_location,
+            COUNT(DISTINCT s.skill_id) AS matching_skills
+        FROM 
+            job j
+        JOIN institution i ON j.institution_id = i.institution_id
+        JOIN user_skill us ON us.user_id = %s
+        JOIN skill s ON s.skill_id = us.skill_id
+        WHERE 
+            LOWER(j.description) LIKE CONCAT('%', LOWER(s.skill_name), '%')
+        GROUP BY 
+            j.job_id, j.job_title, j.description, j.type, i.name, 
+            i.location_city, i.location_state, i.location_country
+        ORDER BY 
+            matching_skills DESC, j.job_id
+        LIMIT 10;"""
+        cursor.execute(query, (user_id,))
         results = cursor.fetchall()
         
         if results:
+            print(results)  
             return {"status": "success", "job_recommendation": results}
         else:
             return {"status": "error", "message": "No job recommendation data found"}
@@ -132,4 +137,3 @@ LIMIT 10;"""
         return {"status": "error", "message": str(error)}
     finally:
         cursor.close()
-    

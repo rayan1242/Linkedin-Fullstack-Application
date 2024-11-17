@@ -72,7 +72,7 @@ export interface Institution {
 }
 
 export interface advancedQuery{
-        user_id: string;
+        user_id: number;
         name: string;
         location_country: string;
         skill_count: number;

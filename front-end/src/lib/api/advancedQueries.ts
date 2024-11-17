@@ -3,17 +3,17 @@ import type { advancedQuery } from "$lib/types";
 
 
 export async function getUserPerformance() {
-    const response = await axios.get("http://localhost:3000/advanced_queries/user_performance");
+    const response = await axios.get("http://localhost:3000/advanced_queries/getJobRecommendation");
     return response.data;
   }
 
 
 export async function getgrowthanalysis(){
-    const response = await axios.get("http://localhost:3000/advanced_queries/analyze_institution_growth");
+    const response = await axios.get("http://localhost:3000/advanced_queries/growthAnalysis");
     return response.data;
 }
 
-export async function getJobRecommendation(){
-    const response = await axios.get("http://localhost:3000/advanced_queries/getJobRecommendation");
+export async function getJobRecommendations(user_id: string){
+    const response = await axios.get(`http://localhost:3000/advanced_queries/getJobRecommendation/${user_id}`);
     return response.data;
 }
