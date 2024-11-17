@@ -1,48 +1,60 @@
 import axios from "axios";
 import type { Institution } from "$lib/types";
 
+const api = axios.create({
+  baseURL: "http://localhost:3000",
+});
+export type InstitutionParam = Omit<Institution, "institution_id">;
+
 async function getInstitutions() {
   try {
-    const response = await axios.get("/institution");
+    const response = await api.get("/institution");
   } catch (error) {
     console.error(error);
   }
 }
 
-async function getInstitution(institution_id: string) {
+export async function getInstitution(institution_id: number) {
   try {
-    const response = await axios.post(`/institution/${institution_id}`);
+    const response = await api.post(`/institution/${institution_id}`);
+    return response.data;
   } catch (error) {
     console.error(error);
+    return { status: 'error', message: 'Error getting institution.' };
   }
 }
 
-async function createInstitution(institution: Institution) {
+export async function createInstitution(institution: InstitutionParam) {
   try {
-    const response = await axios.post("/institution/create", institution);
+    const response = await api.post("/institution/create", institution);
+    return response.data;
   } catch (error) {
     console.error(error);
   }
 }
 
-async function updateInstitution(
-  institution_id: string,
+export async function updateInstitution(
+  institution_id: number,
   institution: Institution
 ) {
   try {
-    const response = await axios.put(
+    const response = await api.put(
       `/institution/${institution_id}`,
       institution
     );
+    return response.data; 
   } catch (error) {
     console.error(error);
+    return { status: 'error', message: 'Error updating institution.' };
   }
 }
 
-async function deleteInstitution(institution_id: string) {
+export async function deleteInstitution(institution_id: number) {
   try {
-    const response = await axios.delete(`/institution/${institution_id}`);
+    const response = await api.delete(`/institution/${institution_id}`);
+    return response.data;
   } catch (error) {
     console.error(error);
+    return { status: 'error', message: 'Error deleting institution.' };
   }
 }

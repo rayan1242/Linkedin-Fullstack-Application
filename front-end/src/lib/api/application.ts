@@ -1,42 +1,53 @@
 import axios from "axios";
 import type { Application } from "$lib/types";
 
-type ApplicationParam = Pick<
+const api = axios.create({
+  baseURL: "http://localhost:3000",
+});
+
+export type ApplicationParam = Pick<
+
   Application,
   "user_id" | "job_id" | "application_status" | "application_date"
 >;
 
+
 export async function getApplications(): Promise<Application> {
-  const response = await axios.get("/application");
+  const response = await api.get("/application");
+
   return response.data;
 }
 
 export async function getApplication(
-  application_id: string
+  application_id: number
 ): Promise<Application> {
-  const response = await axios.post(`/application/${application_id}`);
+  const response = await api.post(`/application/${application_id}`);
+
   return response.data;
 }
 
 export async function createApplication(
   applicationParam: ApplicationParam
 ): Promise<Application> {
-  const response = await axios.post("/application/create", applicationParam);
+  const response = await api.post("/application/create", applicationParam);
+
   return response.data;
 }
 
 export async function updateApplication(
-  application_id: string,
-  application: Application
+  application_id: number,
+  applicationParam: ApplicationParam
 ): Promise<Application> {
-  const response = await axios.put(
+  const response = await api.put(
     `/application/${application_id}`,
-    application
+    applicationParam
+
   );
   return response.data;
 }
 
-export async function deleteApplication(application_id: string) {
-  const response = await axios.delete(`/application/${application_id}`);
+export async function deleteApplication(application_id: number) {
+  const response = await api.delete(`/application/${application_id}`);
+
   return response.data;
 }

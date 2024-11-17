@@ -1,8 +1,10 @@
-<script>
+<script lang="ts">
+    import { getUser, updateUser,  } from '../../../../lib/api/user'; 
     import { onMount } from 'svelte';
-    import axios from 'axios';
 
+    let user_Id: number;
     let userData = {
+        user_Id:0,
         name: '',
         dob: '',
         profile_pic: '',
@@ -13,9 +15,20 @@
 
     let message = '';
 
+    onMount(async () => {
+        try { 
+            const user = await getUser(user_Id);
+
+            userData = user;
+        } catch(e: any) {
+            console.log(e);
+        }
+    })
+
     const handleSubmit = async () => {
         try {
-            const response = await axios.post('http://localhost:3000/user/create', userData);
+            const response = await updateUser(user_Id, userData)
+
             if (response.data.status === 'success') {
                 message = 'User created successfully!';
             } else {
@@ -26,31 +39,18 @@
             message = 'Error creating user.';
         }
     };
-
-    const handleRefresh = () => {
-        userData = {
-            name: '',
-            dob: '',
-            profile_pic: '',
-            location_city: '',
-            location_state: '',
-            location_country: ''
-        };
-        message = '';
-    };
 </script>
 
 <form on:submit|preventDefault={handleSubmit}>
+    <input type="number" bind:value={userData.user_Id} placeholder="User ID" />
     <input type="text" bind:value={userData.name} placeholder="Name" />
     <input type="date" bind:value={userData.dob} placeholder="Date of Birth" />
     <input type="text" bind:value={userData.profile_pic} placeholder="Profile Picture URL" />
     <input type="text" bind:value={userData.location_city} placeholder="City" />
     <input type="text" bind:value={userData.location_state} placeholder="State" />
     <input type="text" bind:value={userData.location_country} placeholder="Country" />
-    <button type="submit">Create User</button>
+    <button type="submit">Update User</button>
 </form>
-
-<button on:click={handleRefresh}>Refresh</button>
 
 {#if message}
     <p>{message}</p>
