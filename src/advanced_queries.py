@@ -63,3 +63,73 @@ ORDER BY overall_rank, country_rank;"""
         return {"status": "error", "message": str(error)};
     finally:
         cursor.close()
+        
+
+def analyze_institution_growth(connection):
+    try:
+        cursor = connection.cursor(dictionary=True)
+        query = """WITH institution_growth AS (
+    SELECT
+        i.institution_id,
+        i.name,
+        e.start,
+        COUNT(*) OVER (PARTITION BY i.institution_id ORDER BY e.start) AS employee_count
+    FROM institution i
+    JOIN experience e ON i.institution_id = e.institution_id
+    )
+    SELECT
+        name,
+        start,
+        employee_count,
+        LAG(employee_count) OVER (PARTITION BY institution_id ORDER BY start) AS previous_count,
+        employee_count - LAG(employee_count) OVER (PARTITION BY institution_id ORDER BY start) AS growth
+    FROM institution_growth
+    ORDER BY name, start;"""
+        cursor.execute(query)
+        results = cursor.fetchall()
+        
+        if results:
+            return {"status": "success", "institution_growth": results}
+        else:
+            return {"status": "error", "message": "No institution growth data found"}
+    except Exception as error:
+        return {"status": "error", "message": str(error)}
+    finally:
+        cursor.close()
+
+def getJobRecommendation(connection):
+    try:
+        cursor = connection.cursor(dictionary=True)
+        query = """SELECT 
+    j.job_id,
+    j.job_title,
+    j.description,
+    j.type,
+    i.name AS institution_name,
+    CONCAT(i.location_city, ', ', i.location_state, ', ', i.location_country) AS institution_location,
+    COUNT(DISTINCT s.skill_id) AS matching_skills
+FROM 
+    job j
+JOIN institution i ON j.institution_id = i.institution_id
+JOIN user_skill us ON us.user_id = 3
+JOIN skill s ON s.skill_id = us.skill_id
+WHERE 
+    LOWER(j.description) LIKE CONCAT('%', LOWER(s.skill_name), '%')
+GROUP BY 
+    j.job_id, j.job_title, j.description, j.type, i.name, 
+    i.location_city, i.location_state, i.location_country
+ORDER BY 
+    matching_skills DESC, j.job_id
+LIMIT 10;"""
+        cursor.execute(query)
+        results = cursor.fetchall()
+        
+        if results:
+            return {"status": "success", "job_recommendation": results}
+        else:
+            return {"status": "error", "message": "No job recommendation data found"}
+    except Exception as error:
+        return {"status": "error", "message": str(error)}
+    finally:
+        cursor.close()
+    

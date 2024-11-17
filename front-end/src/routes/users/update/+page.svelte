@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { getUser, updateUser } from '../../../../lib/api/user'; 
+    import { getUser, updateUser } from '$lib/api/user'; 
     import { onMount } from 'svelte';
 
     export let data;

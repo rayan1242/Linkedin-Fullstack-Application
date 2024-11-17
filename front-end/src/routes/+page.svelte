@@ -1,4 +1,6 @@
-<script>
+<script lang="ts">
+  import { onMount, onDestroy } from 'svelte';
+
   let activeSection = '';
   let showMenu = false;
   let selectedPortal = "Welcome"; // Default text for the home screen
@@ -8,47 +10,94 @@
   }
 
   // Set the active section and close the menu
-  function setActiveSection(section) {
+  function setActiveSection(section: string) {
     activeSection = section;
     selectedPortal = `${section.charAt(0).toUpperCase() + section.slice(1)} Portal`;
     showMenu = false; // Close the menu after selecting a section
   }
 
   // Update the welcome message based on the portal selected
-  function updatePortal(action) {
+  function updatePortal(action: string) {
     selectedPortal = `${activeSection.charAt(0).toUpperCase() + activeSection.slice(1)} Portal - ${action}`;
   }
+  function handleKeydown(event: KeyboardEvent) {
+    if (event.key === 'Enter') {
+      showMenu = !showMenu;
+    }
+  }
+
+  // Add event listener for keydown on mount
+  onMount(() => {
+    if (typeof window !== 'undefined') {
+      window.addEventListener('keydown', handleKeydown);
+    }
+  });
+
+  // Remove event listener on destroy
+  onDestroy(() => {
+    if (typeof window !== 'undefined') {
+      window.removeEventListener('keydown', handleKeydown);
+    }
+  });
 </script>
 
 <div>
   <!-- Hamburger/X Menu Icon -->
-  <div class="menu-toggle" on:click={toggleMenu}>
+  <button class="menu-toggle" on:click={toggleMenu} tabindex="0" aria-label="Toggle menu">
     {#if showMenu}
       X
     {:else}
       ☰
     {/if}
-  </div>
+  </button>
   <!-- Full Height Sliding Menu -->
   <div class="menu" class:open={showMenu}>
-    <div class="menu-section" on:click={() => setActiveSection('users')}>User</div>
-    <div class="menu-section" on:click={() => setActiveSection('institutions')}>Institution</div>
-    <div class="menu-section" on:click={() => setActiveSection('education')}>Education</div>
-    <div class="menu-section" on:click={() => setActiveSection('experience')}>Experience</div>
-    <div class="menu-section" on:click={() => setActiveSection('application')}>Application</div>
-    <div class="menu-section" on:click={() => setActiveSection('jobs')}>Job</div>
-    <div class="menu-section" on:click={() => setActiveSection('skill')}>Skills</div>
-    <div class="menu-section" on:click={() => setActiveSection('posts')}>Post</div>
+    <div class="menu-section" on:click={() => setActiveSection('users')} role="menuitem">User</div>
+    <div class="menu-section" on:click={() => setActiveSection('institutions')} role="menuitem">Institution</div>
+    <div class="menu-section" on:click={() => setActiveSection('education')} role="menuitem">Education</div>
+    <div class="menu-section" on:click={() => setActiveSection('experience')} role="menuitem">Experience</div>
+    <div class="menu-section" on:click={() => setActiveSection('application')} role="menuitem">Application</div>
+    <div class="menu-section" on:click={() => setActiveSection('jobs')} role="menuitem">Job</div>
+    <div class="menu-section" on:click={() => setActiveSection('skill')} role="menuitem">Skills</div>
+    <div class="menu-section" on:click={() => setActiveSection('posts')} role="menuitem">Post</div>
+    <div class="menu-section" on:click={() => setActiveSection('advancedQueries')} role="menuitem">Advanced Queries</div>
   </div>
-
 
   <div class="welcome-message">
     {selectedPortal}
   </div>
 
-
   <!-- CRUD Buttons -->
-  {#if activeSection}
+  {#if activeSection === 'advancedQueries'}
+    <div class="crud-buttons">
+      <button
+        class="crud-button"
+        on:click={() => {
+          updatePortal('User Performance');
+          window.location.href = `/${activeSection}/UserPerformance`;
+        }}
+      >
+        User Performance
+      </button>
+      <button
+      class="crud-button"
+      on:click={() => {
+        updatePortal('Growth Analysis');
+        window.location.href = `/${activeSection}/growthAnalysis`;
+      }}
+      >
+      Growth Analysis
+      </button>
+      <button
+      class="crud-button"
+      on:click={() => {
+        updatePortal('Job Recommendation');
+        window.location.href = `/${activeSection}/JobRecommend`;
+      }}
+      >
+      Job Recommendation
+    </div>
+  {:else if activeSection}
     <div class="crud-buttons">
       <button
         class="crud-button"
@@ -88,8 +137,6 @@
       </button>
     </div>
   {/if}
-
-
 </div>
 
 <style>
@@ -130,6 +177,8 @@
     box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
     transition: left 0.3s ease;
     z-index: 100;
+    display: flex;
+    flex-direction: column;
   }
 
   .menu.open {
@@ -177,8 +226,8 @@
 }
 
 .crud-button {
-  width: 120px;
-  height: 120px;
+  min-width: 120px;
+  min-height: 120px;
   border: none;
   border-radius: 50%; /* Circular shape */
   background: radial-gradient(circle, #0965c7, #0056b3); /* Eye-catching gradient */
@@ -192,6 +241,9 @@
   justify-content: center;
   align-items: center;
   text-align: center;
+  padding: 10px; /* Add padding for better text wrapping */
+  overflow: hidden; /* Hide overflow text */
+  word-wrap: break-word; /* Ensure text wraps within the button */
 }
 
 .crud-button:hover {
