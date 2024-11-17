@@ -1,7 +1,7 @@
 <script lang="ts">
     import { deleteApplication } from '$lib/api/application'; // Adjust the import path as necessary
   
-    let application_id: number;
+    let application_id: string;
     let message = '';
   
     const handleSubmit = async () => {
