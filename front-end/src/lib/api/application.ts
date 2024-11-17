@@ -14,6 +14,7 @@ export type ApplicationParam = Pick<
 
 export async function getApplications(): Promise<Application> {
   const response = await axios.get("http://localhost:3000/application");
+  return response.data;
 
 }
 
@@ -44,7 +45,7 @@ export async function updateApplication(
 ): Promise<Application> {
   const response = await axios.put(
     `http://localhost:3000/application/${application_id}`,
-    application
+    applicationParam
 
   );
   return response.data;

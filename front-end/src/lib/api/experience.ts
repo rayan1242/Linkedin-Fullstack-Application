@@ -8,19 +8,19 @@ const api = axios.create({
 export type ExperienceParams = Omit<Experience, "exp_id">;
 
 
-async function getExperiences() {
+export async function getExperiences() {
   const response = await axios.get("http://localhost:3000/experience");
   return response.data;
 }
 
-async function getExperience(experience_id: string) {
+export async function getExperience(experience_id: string) {
   const response = await axios.post(
     `http://localhost:3000/experience/${experience_id}`
   );
   return response.data;
 }
 
-async function createExperience(experience: Experience) {
+export async function createExperience(experience: ExperienceParams) {
   const response = await axios.post(
     "http://localhost:3000/experience/create",
     experience
@@ -28,7 +28,7 @@ async function createExperience(experience: Experience) {
   return response.data;
 }
 
-async function updateExperience(experience_id: string, experience: Experience) {
+export async function updateExperience(experience_id: string, experience: ExperienceParams) {
   const response = await axios.put(
     `http://localhost:3000/experience/${experience_id}`,
     experience
@@ -36,7 +36,7 @@ async function updateExperience(experience_id: string, experience: Experience) {
   return response.data;
 }
 
-async function deleteExperience(experience_id: string) {
+export async function deleteExperience(experience_id: string) {
   const response = await axios.delete(
     `http://localhost:3000/experience/${experience_id}`
   );

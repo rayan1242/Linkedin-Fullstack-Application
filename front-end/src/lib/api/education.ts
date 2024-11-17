@@ -1,6 +1,8 @@
 import axios from "axios";
 import type { Education } from "$lib/types";
 
+export type EducationParam = Omit<Education, "edu_id">;
+
 export async function getEducations() {
   const response = await axios.get("http://localhost:3000/education");
   return response.data;
@@ -13,7 +15,7 @@ export async function getEducation(education_id: string) {
   return response.data;
 }
 
-export async function createEducation(education: Education) {
+export async function createEducation(education: EducationParam) {
   const response = await axios.post(
     "http://localhost:3000/education/create",
     education
@@ -23,7 +25,7 @@ export async function createEducation(education: Education) {
 
 export async function updateEducation(
   education_id: string,
-  education: Education
+  education: EducationParam
 ) {
   const response = await axios.put(
     `http://localhost:3000/education/${education_id}`,

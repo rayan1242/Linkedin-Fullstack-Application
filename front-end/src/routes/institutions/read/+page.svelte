@@ -1,7 +1,7 @@
 <script lang="ts">
     import { getInstitution } from '$lib/api/institution'; // Adjust the import path as necessary
   
-    let institution_id: number;
+    let institution_id: string;
     let message = '';
     let institution: {
       institution_id?: number;
@@ -56,3 +56,64 @@
       <p><strong>Country:</strong> {institution.location_country}</p>
     </div>
   {/if}
+
+  <style>
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      max-width: 400px;
+      margin: 2rem auto;
+      padding: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      background-color: #f9f9f9;
+    }
+  
+    input[type="number"] {
+      padding: 0.5rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+  
+    button {
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 4px;
+      background-color: #007bff;
+      color: white;
+      cursor: pointer;
+    }
+  
+    button:hover {
+      background-color: #0056b3;
+    }
+  
+    p {
+      color: red;
+      text-align: center;
+    }
+  
+    .institution-details {
+      max-width: 600px;
+      margin: 2rem auto;
+      padding: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      background-color: #f9f9f9;
+    }
+  
+    .institution-details h2 {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+  
+    .institution-details p {
+      margin: 0.5rem 0;
+    }
+  
+    .institution-details strong {
+      display: inline-block;
+      width: 150px;
+    }
+  </style>
