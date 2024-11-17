@@ -49,7 +49,6 @@ export interface Education {
   start: string;
   end: string;
   course: string;
-  duration: number;
 }
 
 export interface Application {

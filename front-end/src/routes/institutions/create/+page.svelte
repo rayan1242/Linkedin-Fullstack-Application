@@ -55,10 +55,50 @@
     <input type="text" bind:value={institution.location_state} placeholder="State" required />
     <input type="text" bind:value={institution.location_country} placeholder="Country" required />
     <button type="submit">Create Institution</button>
+    <button on:click={handleRefresh}>Refresh</button>
   </form>
   
-  <button on:click={handleRefresh}>Refresh</button>
   
   {#if message}
     <p>{message}</p>
   {/if}
+  <style>
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      max-width: 400px;
+      margin: 0 auto;
+      padding: 2rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      background-color: #f9f9f9;
+    }
+
+    input, button {
+      padding: 0.5rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    input:focus {
+      border-color: #007BFF;
+      outline: none;
+    }
+
+    button {
+      background-color: #007BFF;
+      color: white;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    p {
+      text-align: center;
+      color: green;
+      font-weight: bold;
+    }
+  </style>

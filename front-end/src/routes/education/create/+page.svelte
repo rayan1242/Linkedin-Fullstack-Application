@@ -1,13 +1,12 @@
 <script lang="ts">
-  import { createEducation, type EducationParams } from '$lib/api/education'; // Adjust the import path as necessary
+  import { createEducation, type EducationParam } from '$lib/api/education'; // Adjust the import path as necessary
 
-  let education: EducationParams = {
+  let education: EducationParam = {
     user_id: 0,
     institution_id: 0,
     start: '',
     end: '',
     course: '',
-    duration: 0
   };
 
   let message = '';
@@ -34,11 +33,51 @@
       start: '',
       end: '',
       course: '',
-      duration: 0
     };
     message = '';
   };
 </script>
+
+<style>
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    max-width: 400px;
+    margin: auto;
+    padding: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+  }
+
+  input, button {
+    padding: 0.5rem;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+
+  input:focus {
+    border-color: #007bff;
+    outline: none;
+  }
+
+  button {
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+  }
+
+  button:hover {
+    background-color: #0056b3;
+  }
+
+  p {
+    text-align: center;
+    color: green;
+  }
+</style>
 
 <form on:submit|preventDefault={handleSubmit}>
   <input type="number" bind:value={education.user_id} placeholder="User ID" required />
@@ -46,11 +85,11 @@
   <input type="date" bind:value={education.start} placeholder="Start Date" required />
   <input type="date" bind:value={education.end} placeholder="End Date" />
   <input type="text" bind:value={education.course} placeholder="Course" required />
-  <input type="number" bind:value={education.duration} placeholder="Duration" required />
   <button type="submit">Create Education</button>
+  <button on:click={handleRefresh}>Refresh</button>
+
 </form>
 
-<button on:click={handleRefresh}>Refresh</button>
 
 {#if message}
   <p>{message}</p>
