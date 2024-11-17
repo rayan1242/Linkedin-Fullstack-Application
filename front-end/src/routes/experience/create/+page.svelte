@@ -51,10 +51,52 @@
   <input type="text" bind:value={experience.title} placeholder="Title" required />
   <input type="number" bind:value={experience.duration} placeholder="Duration" required />
   <button type="submit">Create Experience</button>
+  <button on:click={handleRefresh}>Refresh</button>
 </form>
 
-<button on:click={handleRefresh}>Refresh</button>
 
 {#if message}
   <p>{message}</p>
 {/if}
+<style>
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+  }
+
+  input, button {
+    padding: 0.5rem;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+
+  input:focus {
+    border-color: #007bff;
+    outline: none;
+  }
+
+  button {
+    cursor: pointer;
+    background-color: #007bff;
+    color: white;
+    border: none;
+  }
+
+  button:hover {
+    background-color: #0056b3;
+  }
+
+  p {
+    text-align: center;
+    color: green;
+    font-weight: bold;
+  }
+</style>

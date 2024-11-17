@@ -1,10 +1,10 @@
 <script lang="ts">
-    import { getUser, updateUser,  } from '../../../../lib/api/user'; 
+    import { getUser, updateUser } from '../../../../lib/api/user'; 
     import { onMount } from 'svelte';
 
     export let data;
 
-    let userId = data.userId
+    let userId = data.userId;
 
     $: userData = {
         name: '',
@@ -25,59 +25,127 @@
         } catch(e: any) {
             console.log(e);
         }
-    })
+    });
 
     const handleSubmit = async () => {
         try {
-            const response = await updateUser(userId, userData)
+            const response = await updateUser(userId, userData);
             if (response.status === 'success') {
-
-                message = 'User created successfully!';
+                message = 'User updated successfully!';
             } else {
                 message = `Error: ${response.message}`;
             }
         } catch (error) {
             console.error(error);
-            message = 'Error creating user.';
+            message = 'Error updating user.';
         }
     };
 </script>
 
-<a href="/users">
-        <button class="border-2 p-1">go back</button>
-    </a>
-<div class="w-full flex justify-center items-center mt-20">
-    <form on:submit|preventDefault={handleSubmit} class="flex flex-col gap-2">
-        <div class="flex gap-1">
+<a href="/">
+    <button class="back-button">Go Back</button>
+</a>
+<div class="container">
+    <form on:submit|preventDefault={handleSubmit} class="form">
+        <div class="form-group">
             <label>Name</label>
-            <input class="border-2" type="text" bind:value={userData.name} placeholder="Name" />
+            <input type="text" bind:value={userData.name} placeholder="Name" />
         </div>
-        <div>
+        <div class="form-group">
             <label>Date of Birth</label>
-            <input class="border-2" type="date" bind:value={userData.dob} placeholder="Date of Birth" />
+            <input type="date" bind:value={userData.dob} placeholder="Date of Birth" />
         </div>
-        <div>
+        <div class="form-group">
             <label>Profile Link</label>
-            <input class="border-2" type="text" bind:value={userData.profile_pic} placeholder="Profile Picture URL" />
+            <input type="text" bind:value={userData.profile_pic} placeholder="Profile Picture URL" />
         </div>
-        <div>
+        <div class="form-group">
             <label>City</label>
-            <input class="border-2" type="text" bind:value={userData.location_city} placeholder="City" />
+            <input type="text" bind:value={userData.location_city} placeholder="City" />
         </div>
-        <div>
+        <div class="form-group">
             <label>State</label>
-            <input class="border-2" type="text" bind:value={userData.location_state} placeholder="State" />
+            <input type="text" bind:value={userData.location_state} placeholder="State" />
         </div>
-        <div>
+        <div class="form-group">
             <label>Country</label>
-            <input class="border-2" type="text" bind:value={userData.location_country} placeholder="Country" />
+            <input type="text" bind:value={userData.location_country} placeholder="Country" />
         </div>
-        
-        <button type="submit">Update User</button>
+        <button type="submit" class="submit-button">Update User</button>
     </form>
 </div>
 
-
 {#if message}
-    <p>{message}</p>
+    <p class="message">{message}</p>
 {/if}
+
+<style>
+    .back-button {
+        border: 2px solid #ccc;
+        padding: 0.5rem 1rem;
+        margin-bottom: 1rem;
+        cursor: pointer;
+        background-color: #f8f8f8;
+        transition: background-color 0.3s;
+    }
+
+    .back-button:hover {
+        background-color: #e0e0e0;
+    }
+
+    .container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 2rem;
+    }
+
+    .form {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        width: 100%;
+        max-width: 400px;
+        padding: 2rem;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        background-color: #fff;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .form-group label {
+        margin-bottom: 0.5rem;
+        font-weight: bold;
+    }
+
+    .form-group input {
+        padding: 0.5rem;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+
+    .submit-button {
+        padding: 0.75rem;
+        border: none;
+        border-radius: 4px;
+        background-color: #007bff;
+        color: #fff;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .submit-button:hover {
+        background-color: #0056b3;
+    }
+
+    .message {
+        margin-top: 1rem;
+        font-size: 1rem;
+        color: #007bff;
+    }
+</style>
