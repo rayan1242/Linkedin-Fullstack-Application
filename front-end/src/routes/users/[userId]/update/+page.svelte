@@ -2,9 +2,11 @@
     import { getUser, updateUser,  } from '../../../../lib/api/user'; 
     import { onMount } from 'svelte';
 
-    let user_Id: number;
-    let userData = {
-        user_Id:0,
+    export let data;
+
+    let userId = data.userId
+
+    $: userData = {
         name: '',
         dob: '',
         profile_pic: '',
@@ -17,9 +19,9 @@
 
     onMount(async () => {
         try { 
-            const user = await getUser(user_Id);
-
-            userData = user;
+            const response = await getUser(userId);
+            userData = response.user;
+            userData.dob = new Date(userData.dob).toISOString().split('T')[0];
         } catch(e: any) {
             console.log(e);
         }
@@ -27,12 +29,12 @@
 
     const handleSubmit = async () => {
         try {
-            const response = await updateUser(user_Id, userData)
+            const response = await updateUser(userId, userData)
+            if (response.status === 'success') {
 
-            if (response.data.status === 'success') {
                 message = 'User created successfully!';
             } else {
-                message = `Error: ${response.data.message}`;
+                message = `Error: ${response.message}`;
             }
         } catch (error) {
             console.error(error);
@@ -41,16 +43,40 @@
     };
 </script>
 
-<form on:submit|preventDefault={handleSubmit}>
-    <input type="number" bind:value={userData.user_Id} placeholder="User ID" />
-    <input type="text" bind:value={userData.name} placeholder="Name" />
-    <input type="date" bind:value={userData.dob} placeholder="Date of Birth" />
-    <input type="text" bind:value={userData.profile_pic} placeholder="Profile Picture URL" />
-    <input type="text" bind:value={userData.location_city} placeholder="City" />
-    <input type="text" bind:value={userData.location_state} placeholder="State" />
-    <input type="text" bind:value={userData.location_country} placeholder="Country" />
-    <button type="submit">Update User</button>
-</form>
+<a href="/users">
+        <button class="border-2 p-1">go back</button>
+    </a>
+<div class="w-full flex justify-center items-center mt-20">
+    <form on:submit|preventDefault={handleSubmit} class="flex flex-col gap-2">
+        <div class="flex gap-1">
+            <label>Name</label>
+            <input class="border-2" type="text" bind:value={userData.name} placeholder="Name" />
+        </div>
+        <div>
+            <label>Date of Birth</label>
+            <input class="border-2" type="date" bind:value={userData.dob} placeholder="Date of Birth" />
+        </div>
+        <div>
+            <label>Profile Link</label>
+            <input class="border-2" type="text" bind:value={userData.profile_pic} placeholder="Profile Picture URL" />
+        </div>
+        <div>
+            <label>City</label>
+            <input class="border-2" type="text" bind:value={userData.location_city} placeholder="City" />
+        </div>
+        <div>
+            <label>State</label>
+            <input class="border-2" type="text" bind:value={userData.location_state} placeholder="State" />
+        </div>
+        <div>
+            <label>Country</label>
+            <input class="border-2" type="text" bind:value={userData.location_country} placeholder="Country" />
+        </div>
+        
+        <button type="submit">Update User</button>
+    </form>
+</div>
+
 
 {#if message}
     <p>{message}</p>

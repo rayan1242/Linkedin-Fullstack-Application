@@ -8,28 +8,29 @@ const api = axios.create({
 export type UserParam = Omit<User, "user_id">;
 
 export async function getUsers() {
-  const response = await api.get("/user");
+  const response = await axios.get("http://localhost:3000/users");
   return response.data;
 }
 
-export async function getUser(user_id: number) {
-  const response = await api.post(`/user/${user_id}`);
-
+export async function getUser(user_id: string) {
+  const response = await axios.get(`http://localhost:3000/user/${user_id}`);
   return response.data;
 }
 
 export async function createUser(user: UserParam) {
-  const response = await api.post("/user/create", user);
+  const response = await axios.post("http://localhost:3000/user/create", user);
   return response.data;
 }
 
-export async function updateUser(user_id: number, user: UserParam) {
-  const response = await api.put(`/user/${user_id}`, user);
+export async function updateUser(user_id: string, user: UserParam) {
+  const response = await axios.put(
+    `http://localhost:3000/user/${user_id}`,
+    user
+  );
   return response.data;
 }
 
-export async function deleteUser(user_id: number) {
-  const response = await api.delete(`/user/${user_id}`);
-
+export async function deleteUser(user_id: string) {
+  const response = await axios.delete(`http://localhost:3000/user/${user_id}`);
   return response.data;
 }

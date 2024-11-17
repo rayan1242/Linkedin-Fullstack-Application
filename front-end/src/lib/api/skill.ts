@@ -1,49 +1,36 @@
 import axios from "axios";
 import type { Skill } from "$lib/types";
 
-const api = axios.create({
-  baseURL: "http://localhost:3000",
-});
-
-export type skillParam = Omit<Skill, "skill_id">;
-
-
-async function getSkills() {
-  try {
-    const response = await api.get("/skill");
-  } catch (error) {
-    console.error(error);
-  }
+export async function getSkills() {
+  const response = await axios.get("http://localhost:3000/skill");
+  return response.data;
 }
 
-export async function getSkill(skill_id: number) {
-  try {
-    const response = await api.post(`/skill/${skill_id}`);
-  } catch (error) {
-    console.error(error);
-  }
+export async function getSkill(skill_id: string) {
+  const response = await axios.post(`http://localhost:3000/skill/${skill_id}`);
+  return response.data;
 }
 
-export async function createSkill(skill: skillParam) {
-  try {
-    const response = await api.post("/skill/create", skill);
-  } catch (error) {
-    console.error(error);
-  }
+export async function createSkill(skill: Skill) {
+  const response = await axios.post(
+    "http://localhost:3000/skill/create",
+    skill
+  );
+  return response.data;
 }
 
-export async function updateSkill(skill_id: number, skill: skillParam) {
-  try {
-    const response = await api.put(`/skill/${skill_id}`, skill);
-  } catch (error) {
-    console.error(error);
-  }
+export async function updateSkill(skill_id: string, skill: Skill) {
+  const response = await axios.put(
+    `http://localhost:3000/skill/${skill_id}`,
+    skill
+  );
+  return response.data;
 }
 
-export async function deleteSkill(skill_id: number) {
-  try {
-    const response = await api.delete(`/skill/${skill_id}`);
-  } catch (error) {
-    console.error(error);
-  }
+export async function deleteSkill(skill_id: string) {
+  const response = await axios.delete(
+    `http://localhost:3000/skill/${skill_id}`
+  );
+  return response.data;
+
 }
