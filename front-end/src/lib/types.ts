@@ -70,3 +70,14 @@ export interface Institution {
   location_state: string;
   location_country: string;
 }
+
+export interface advancedQuery{
+        user_id: string;
+        name: string;
+        location_country: string;
+        skill_count: number;
+        post_count: number;
+        overall_rank: number;
+        country_rank: number;
+        performance_category: string;
+}
