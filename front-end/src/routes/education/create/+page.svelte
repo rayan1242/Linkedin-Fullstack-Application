@@ -44,7 +44,7 @@
     flex-direction: column;
     gap: 1rem;
     max-width: 400px;
-    margin: auto;
+    margin: 10% auto;
     padding: 1rem;
     border: 1px solid #ccc;
     border-radius: 8px;

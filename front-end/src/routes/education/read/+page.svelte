@@ -36,7 +36,7 @@
     display: flex;
     flex-direction: column;
     max-width: 400px;
-    margin: 0 auto;
+    margin: 20% auto;
     padding: 1rem;
     border: 1px solid #ccc;
     border-radius: 8px;

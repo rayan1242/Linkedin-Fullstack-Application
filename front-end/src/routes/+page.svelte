@@ -31,10 +31,14 @@
   </div>
   <!-- Full Height Sliding Menu -->
   <div class="menu" class:open={showMenu}>
-    <div class="menu-section" on:click={() => setActiveSection('users')}>Users</div>
-    <div class="menu-section" on:click={() => setActiveSection('institutions')}>Institutions</div>
+    <div class="menu-section" on:click={() => setActiveSection('users')}>User</div>
+    <div class="menu-section" on:click={() => setActiveSection('institutions')}>Institution</div>
     <div class="menu-section" on:click={() => setActiveSection('education')}>Education</div>
     <div class="menu-section" on:click={() => setActiveSection('experience')}>Experience</div>
+    <div class="menu-section" on:click={() => setActiveSection('application')}>Application</div>
+    <div class="menu-section" on:click={() => setActiveSection('jobs')}>Job</div>
+    <div class="menu-section" on:click={() => setActiveSection('skill')}>Skills</div>
+    <div class="menu-section" on:click={() => setActiveSection('posts')}>Post</div>
   </div>
 
 

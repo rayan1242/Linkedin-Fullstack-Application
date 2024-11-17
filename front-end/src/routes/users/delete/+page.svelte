@@ -33,7 +33,7 @@
             border: 1px solid #ccc;
             border-radius: 8px;
             max-width: 400px;
-            margin: 2rem auto;
+            margin: 10rem auto;
             background-color: #f9f9f9;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }

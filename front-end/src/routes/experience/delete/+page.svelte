@@ -37,7 +37,7 @@
       border: 1px solid #ccc;
       border-radius: 8px;
       max-width: 400px;
-      margin: 2rem auto;
+      margin: 20% auto;
       background-color: #f9f9f9;
     }
 

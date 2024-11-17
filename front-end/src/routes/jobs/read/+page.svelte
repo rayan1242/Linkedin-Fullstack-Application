@@ -58,7 +58,7 @@
       gap: 1rem;
       width: 100%;
       max-width: 500px;
-      margin: 2rem auto;
+      margin: 20% auto;
       padding: 2rem;
       border: 1px solid #ddd;
       border-radius: 8px;

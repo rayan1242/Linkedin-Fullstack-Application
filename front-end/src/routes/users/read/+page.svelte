@@ -24,12 +24,24 @@
 </script>
 
 <style>
+  .container {
+    position: absolute;
+    top: 30%;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    align-items: center;
+    max-width: 300px;
+    width: 100%;
+  }
+
   form {
     display: flex;
     flex-direction: column;
     gap: 1rem;
-    max-width: 400px;
-    margin: 0 auto;
+    width: 100%;
     padding: 1rem;
     border: 1px solid #ccc;
     border-radius: 8px;
@@ -60,12 +72,12 @@
   }
 
   .user-details {
-    max-width: 400px;
-    margin: 1rem auto;
     padding: 1rem;
     border: 1px solid #ccc;
     border-radius: 8px;
     background-color: #f9f9f9;
+    width: 100%;
+    text-align: center;
   }
 
   .user-details h2 {
@@ -77,21 +89,23 @@
   }
 </style>
 
-<form on:submit|preventDefault={handleSubmit}>
-  <input type="number" bind:value={user_id} placeholder="User ID" />
-  <button type="submit">Get User</button>
-</form>
+<div class="container">
+  <form on:submit|preventDefault={handleSubmit}>
+    <input type="number" bind:value={user_id} placeholder="User ID" />
+    <button type="submit">Get User</button>
+  </form>
 
-{#if message}
-  <p class="message">{message}</p>
-{/if}
+  {#if message}
+    <p class="message">{message}</p>
+  {/if}
 
-{#if user}
-  <div class="user-details">
-    <h2>User Details</h2>
-    <p><strong>ID:</strong> {user.user_id}</p>
-    <p><strong>Name:</strong> {user.name}</p>
-    <p><strong>Date of Birth:</strong> {user.dob}</p>
-    <!-- Add more fields as necessary -->
-  </div>
-{/if}
+  {#if user && Object.keys(user).length > 0}
+    <div class="user-details">
+      <h2>User Details</h2>
+      <p><strong>ID:</strong> {user.user_id}</p>
+      <p><strong>Name:</strong> {user.name}</p>
+      <p><strong>Date of Birth:</strong> {user.dob}</p>
+      <!-- Add more fields as necessary -->
+    </div>
+  {/if}
+</div>

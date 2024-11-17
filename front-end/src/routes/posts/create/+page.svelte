@@ -64,7 +64,7 @@
 /* Form Container */
 form {
   max-width: 600px;
-  margin: 20px auto;
+  margin: 15% auto;
   padding: 20px;
   border: 1px solid #ccc;
   border-radius: 10px;

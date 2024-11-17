@@ -63,12 +63,23 @@
     <p>{message}</p>
   {/if}
   <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+    }
     form {
       display: flex;
+      
       flex-direction: column;
       gap: 1rem;
       max-width: 400px;
-      margin: 0 auto;
+      margin: 5% auto;
       padding: 2rem;
       border: 1px solid #ccc;
       border-radius: 8px;
