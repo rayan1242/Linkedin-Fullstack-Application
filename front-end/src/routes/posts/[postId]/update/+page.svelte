@@ -1,42 +1,44 @@
 <script lang="ts">
-  import { getSkill } from '$lib/api/skill';
+  import { updatePost, type PostParam } from '$lib/api/post';
 
-  let skill_id: number;
-  let skill = { skill_id: 0, skill_name: '' };
+  let post_id: string = '';
+  let post: PostParam = {
+      user_id: 0,
+      post_content: '',
+      post_date: '',
+      likes: 0,
+      last_liked_at: '',
+  };
+
   let message = '';
 
   const handleSubmit = async () => {
       try {
-          const response = await getSkill(String(skill_id));
+          const response = await updatePost(post_id, post);
           if (response.status === 'success') {
-              skill = response.skill;
-              message = '';
+              message = 'Post updated successfully!';
           } else {
-              skill = { skill_id: 0, skill_name: '' };
               message = `Error: ${response.message}`;
           }
       } catch (error) {
           console.error(error);
-          message = 'Error fetching skill.';
+          message = 'Error updating post.';
       }
   };
 </script>
 
 <form on:submit|preventDefault={handleSubmit}>
-  <input type="number" bind:value={skill_id} placeholder="Skill ID" required />
-  <button type="submit">Get Skill</button>
+  <input type="text" bind:value={post_id} placeholder="Post ID" required />
+  <input type="number" bind:value={post.user_id} placeholder="User ID" required />
+  <textarea bind:value={post.post_content} placeholder="Post Content" required></textarea>
+  <input type="date" bind:value={post.post_date} placeholder="Post Date" required />
+  <input type="number" bind:value={post.likes} placeholder="Likes" />
+  <input type="datetime-local" bind:value={post.last_liked_at} placeholder="Last Liked At" />
+  <button type="submit">Update Post</button>
 </form>
 
 {#if message}
-  <p class="error">{message}</p>
-{/if}
-
-{#if skill.skill_id}
-  <div>
-      <h2>Skill Details</h2>
-      <p><strong>ID:</strong> {skill.skill_id}</p>
-      <p><strong>Name:</strong> {skill.skill_name}</p>
-  </div>
+<p>{message}</p>
 {/if}
 
 

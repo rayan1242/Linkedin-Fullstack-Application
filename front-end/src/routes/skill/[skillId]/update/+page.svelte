@@ -1,42 +1,33 @@
 <script lang="ts">
-  import { getSkill } from '$lib/api/skill';
+  import { updateSkill, type SkillParam } from '$lib/api/skill';
 
   let skill_id: number;
-  let skill = { skill_id: 0, skill_name: '' };
+  let skill: SkillParam = { skill_name: '' };
   let message = '';
 
   const handleSubmit = async () => {
       try {
-          const response = await getSkill(String(skill_id));
+          const response = await updateSkill(String(skill_id), skill);
           if (response.status === 'success') {
-              skill = response.skill;
-              message = '';
+              message = 'Skill updated successfully!';
           } else {
-              skill = { skill_id: 0, skill_name: '' };
               message = `Error: ${response.message}`;
           }
       } catch (error) {
           console.error(error);
-          message = 'Error fetching skill.';
+          message = 'Error updating skill.';
       }
   };
 </script>
 
 <form on:submit|preventDefault={handleSubmit}>
   <input type="number" bind:value={skill_id} placeholder="Skill ID" required />
-  <button type="submit">Get Skill</button>
+  <input type="text" bind:value={skill.skill_name} placeholder="Skill Name" required />
+  <button type="submit">Update Skill</button>
 </form>
 
 {#if message}
-  <p class="error">{message}</p>
-{/if}
-
-{#if skill.skill_id}
-  <div>
-      <h2>Skill Details</h2>
-      <p><strong>ID:</strong> {skill.skill_id}</p>
-      <p><strong>Name:</strong> {skill.skill_name}</p>
-  </div>
+  <p class={message.startsWith('Error') ? 'error' : 'success'}>{message}</p>
 {/if}
 
 

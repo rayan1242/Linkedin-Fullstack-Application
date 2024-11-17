@@ -2,7 +2,7 @@
     import { deleteUser, type UserParam } from '$lib/api/user';
     import axios from 'axios';
 
-    let user_id: number;
+    let user_id: string;
     let message = '';
 
     const handleSubmit = async () => {
