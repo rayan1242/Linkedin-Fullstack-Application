@@ -13,15 +13,16 @@ export type ApplicationParam = Pick<
 
 
 export async function getApplications(): Promise<Application> {
-  const response = await api.get("/application");
+  const response = await axios.get("http://localhost:3000/application");
 
-  return response.data;
 }
 
 export async function getApplication(
   application_id: number
 ): Promise<Application> {
-  const response = await api.post(`/application/${application_id}`);
+  const response = await axios.post(
+    `http://localhost:3000/application/${application_id}`
+  );
 
   return response.data;
 }
@@ -29,7 +30,10 @@ export async function getApplication(
 export async function createApplication(
   applicationParam: ApplicationParam
 ): Promise<Application> {
-  const response = await api.post("/application/create", applicationParam);
+  const response = await axios.post(
+    "http://localhost:3000/application/create",
+    applicationParam
+  );
 
   return response.data;
 }
@@ -38,16 +42,18 @@ export async function updateApplication(
   application_id: number,
   applicationParam: ApplicationParam
 ): Promise<Application> {
-  const response = await api.put(
-    `/application/${application_id}`,
-    applicationParam
+  const response = await axios.put(
+    `http://localhost:3000/application/${application_id}`,
+    application
 
   );
   return response.data;
 }
 
-export async function deleteApplication(application_id: number) {
-  const response = await api.delete(`/application/${application_id}`);
+export async function deleteApplication(application_id: string) {
+  const response = await axios.delete(
+    `http://localhost:3000/application/${application_id}`
+  );
 
   return response.data;
 }

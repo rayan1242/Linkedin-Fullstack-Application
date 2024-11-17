@@ -5,7 +5,11 @@ def connect_to_database():
         connection = mysql.connector.connect(
             host="127.0.0.1",
             user="root",
+<<<<<<< HEAD
             password="Aditya.dev31",
+=======
+            password="147qew147",
+>>>>>>> c8ea4a8ed513e20d0556fc9223ab29b27b52b3f9
             database="linkedin"
         )
         return connection

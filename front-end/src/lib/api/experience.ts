@@ -9,53 +9,37 @@ export type ExperienceParams = Omit<Experience, "exp_id">;
 
 
 async function getExperiences() {
-  try {
-    const response = await api.get("/experience");
-  } catch (error) {
-    console.error(error);
-  }
+  const response = await axios.get("http://localhost:3000/experience");
+  return response.data;
 }
 
-export async function getExperience(experience_id: number) {
-  try {
-    const response = await api.post(`/experience/${experience_id}`);
-    return response.data;
-  } catch (error) {
-    console.error(error);
-    return { status: 'error', message: 'Error getting experience.' };
-  }
-
+async function getExperience(experience_id: string) {
+  const response = await axios.post(
+    `http://localhost:3000/experience/${experience_id}`
+  );
+  return response.data;
 }
 
-export async function createExperience(experience: ExperienceParams) {
-  try {
-    const response = await api.post("/experience/create", experience);
-    return response.data;
-  } catch (error) {
-    console.error(error);
-    return { status: 'error', message: 'Error creating experience.' };
-  }
+async function createExperience(experience: Experience) {
+  const response = await axios.post(
+    "http://localhost:3000/experience/create",
+    experience
+  );
+  return response.data;
 }
 
-export async function updateExperience(experience_id: number, experience: ExperienceParams) {
-  try {
-    const response = await api.put(
-      `/experience/${experience_id}`,
-      experience
-    );
-    return  response.data;
-  } catch (error) {
-    console.error(error);
-    return { status: 'error', message: 'Error updating experience.' };
-  }
+async function updateExperience(experience_id: string, experience: Experience) {
+  const response = await axios.put(
+    `http://localhost:3000/experience/${experience_id}`,
+    experience
+  );
+  return response.data;
 }
 
-export async function deleteExperience(experience_id: number) {
-  try {
-    const response = await api.delete(`/experience/${experience_id}`);
-    return response.data;
-  } catch (error) {
-    console.error(error);
-    return { status: 'error', message: 'Error deleting experience.' };
-  }
+async function deleteExperience(experience_id: string) {
+  const response = await axios.delete(
+    `http://localhost:3000/experience/${experience_id}`
+  );
+  return response.data;
+ 
 }
