@@ -9,12 +9,19 @@ from job import create_job, get_job, update_job, delete_job, get_all_jobs
 from application import create_application, get_application, update_application, delete_application, get_all_applications
 from post import create_post, get_post, update_post, delete_post, get_all_posts
 from skill import create_skill, get_skill, update_skill, delete_skill, get_all_skills
-from advanced_queries import user_performance
+from advanced_queries import user_performance,analyze_institution_growth,getJobRecommendation
 from flask_cors import CORS
 
 app = Flask(__name__)
 connection = connect_to_database()
 CORS(app)
+
+@app.route('/advanced_queries/getJobRecommendation/<int:user_id>', methods=['GET'], strict_slashes=False)
+def getJobRecommendations(user_id):
+    return getJobRecommendation(connection,user_id)
+@app.route('/advanced_queries/growthAnalysis', methods=['GET'], strict_slashes=False)
+def analyze_institution_growth_route():
+    return analyze_institution_growth(connection)
 
 @app.route('/advanced_queries/user_performance', methods=['GET'], strict_slashes=False)
 def user_performance_route():
