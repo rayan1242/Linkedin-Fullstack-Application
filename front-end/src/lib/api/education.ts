@@ -7,11 +7,19 @@ export async function getEducations() {
   const response = await axios.get("http://localhost:3000/education");
   return response.data;
 }
+<<<<<<< HEAD
  
 export async function getEducation(edu_id: string) {
   const response = await axios.get(
     `http://localhost:3000/education/${edu_id}`
+=======
+
+export async function getEducation(user_id: string) {
+  const response = await axios.get(
+    `http://localhost:3000/education/${user_id}`
+>>>>>>> 6346ce0598763c15c2540c8bc30354142526fe6e
   );
+  console.log(response.data);
   return response.data;
 }
 

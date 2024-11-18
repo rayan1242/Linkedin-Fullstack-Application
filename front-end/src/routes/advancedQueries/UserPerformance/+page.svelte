@@ -1,6 +1,5 @@
 <script lang="ts">
     import { onMount } from 'svelte';
-    import axios from 'axios';
     import { getUserPerformance } from '$lib/api/advancedQueries';
     interface UserPerformance {
     user_id: string;

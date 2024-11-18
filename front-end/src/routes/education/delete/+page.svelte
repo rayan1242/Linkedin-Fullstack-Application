@@ -1,13 +1,13 @@
 <script lang="ts">
   import { deleteEducation } from '$lib/api/education'; // Adjust the import path as necessary
 
-  let education_id: number;
+  let education_id: string;
   let message = '';
 
   const handleSubmit = async () => {
     try {
       const response = await deleteEducation(education_id);
-      if (response.status === 'success') {
+      if (response && response.status === 'success') {
         message = 'Education record deleted successfully!';
       } else {
         message = `Error: ${response.message}`;

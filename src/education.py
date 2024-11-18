@@ -19,14 +19,17 @@ def create_education(education_data,connection):
             raise ValueError("Institution ID must be an integer.")
         if not isinstance(course, str) or not course:
             raise ValueError("Course must be a non-empty string.")
-        datetime.datetime.strptime(start_date, '%Y-%m-%d')
+        if start_date:
+            start_date = datetime.strptime(start_date, '%Y-%m-%d').date()
+        else:
+            raise ValueError("Start date must be provided and in 'YYYY-MM-DD' format.")
         if end_date:
-            datetime.datetime.strptime(end_date, '%Y-%m-%d')
+            end_date = datetime.strptime(end_date, '%Y-%m-%d').date()
     except ValueError as e:
         return {"status": "error", "message": str(e)}
 
     try:
-        query = """INSERT INTO education (user_id, institution_id, course, start_date, end_date)
+        query = """INSERT INTO education (user_id, institution_id, course, start, end)
                    VALUES (%s, %s, %s, %s, %s)"""
         values = (user_id, institution_id, course, start_date, end_date)
 
@@ -46,16 +49,19 @@ def create_education(education_data,connection):
 
 def get_education(user_id,connection):
     cursor = connection.cursor(dictionary=True)
+    user_id = int(user_id)
 
     try:
         query = "SELECT * FROM education WHERE user_id = %s"
         cursor.execute(query, (user_id,))
         results = cursor.fetchall()
-
         if results:
+            for result in results:
+                result.pop("start", None)
+                result.pop("end", None)
+                print(results)   
             return {"status": "success", "educations": results}
-        else:
-            return {"status": "error", "message": "No education records found for this user."}
+        return {"status": "error", "message": "No education records found for this user."}
     except mysql.connector.Error as err:
         return {"status": "error", "message": str(err)}
     finally:
@@ -78,11 +84,11 @@ def get_all_educations(connection):
     finally:
         cursor.close()
 
-def update_education( education_id, update_data,connection):
+def update_education( edu_id, update_data,connection):
     cursor = connection.cursor(dictionary=True)
 
     try:
-        cursor.execute("SELECT * FROM education WHERE education_id = %s", (education_id,))
+        cursor.execute("SELECT * FROM education WHERE edu_id = %s", (edu_id,))
         result = cursor.fetchone()
         if not result:
             return {"status": "error", "message": "Education ID does not exist."}
@@ -113,14 +119,14 @@ def update_education( education_id, update_data,connection):
         return {"status": "error", "message": "No fields to update"}
 
     try:
-        query = f"UPDATE education SET {', '.join(updates)} WHERE education_id = %s"
-        values.append(education_id)
+        query = f"UPDATE education SET {', '.join(updates)} WHERE edu_id = %s"
+        values.append(edu_id)
 
         cursor.execute(query, tuple(values))
         connection.commit()
 
         # Retrieve the updated education data
-        cursor.execute("SELECT * FROM education WHERE education_id = %s", (education_id,))
+        cursor.execute("SELECT * FROM education WHERE edu_id = %s", (edu_id,))
         updated_education = cursor.fetchone()
         return {"status": "success", "education": updated_education}
     except mysql.connector.Error as err:
@@ -129,19 +135,20 @@ def update_education( education_id, update_data,connection):
     finally:
         cursor.close()
 
-def delete_education( education_id,connection):
+def delete_education( edu_id,connection):
     cursor = connection.cursor(dictionary=True)
 
     try:
-        cursor.execute("SELECT * FROM education WHERE education_id = %s", (education_id,))
+        edu = int(edu_id)
+        cursor.execute("SELECT * FROM education WHERE edu_id = %s", (edu_id,))
         result = cursor.fetchone()
         if not result:
             return {"status": "error", "message": "Education ID does not exist."}
 
-        query = "DELETE FROM education WHERE education_id = %s"
-        cursor.execute(query, (education_id,))
+        query = "DELETE FROM education WHERE edu_id = %s"
+        cursor.execute(query, (edu_id,))
         connection.commit()
-        return {"status": "success", "deleted_education_id": education_id}
+        return {"status": "success", "deleted_education_id": edu_id}
     except mysql.connector.Error as err:
         connection.rollback()
         return {"status": "error", "message": str(err)}

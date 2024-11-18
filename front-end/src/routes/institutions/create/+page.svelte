@@ -20,7 +20,6 @@
         const response = await createInstitution(institution);
         if (response.status === 'success') {
           message = 'Institution created successfully!';
-          handleRefresh();
         } else {
           message = `Error: ${response.message}`;
         }
