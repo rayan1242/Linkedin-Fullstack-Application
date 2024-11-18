@@ -1,5 +1,7 @@
 # CS425 Linkedin Project
 
+**LINK to video** https://www.loom.com/share/05e8d25393fd4092bca7abb5b1f7c9e7?sid=490d0cd4-1587-4beb-aa0b-f23024729ca3 
+
 A brief description of your project, what it does, and its purpose.
 
 ## Table of Contents
@@ -64,12 +66,12 @@ A brief description of your project, what it does, and its purpose.
 
 - main.py: entry, main menu.
 - application.py: CRUD of application table.
-- education.py: get_all_education, CRUD of education table.
+- education.py: CRUD of education table.
 - experience.py: CRUD of experience table.
-- institution.py: get_all_institutions, CRUD of institution table.
-- job.py: get_all_jobs, CRUD of job table.
-- post.py: get_all_posts, CRUD of post table.
-- skill.py: get_all_skills, CRUD of skill table.
-- user.py: get_all_users, CRUD of user table.
+- institution.py: CRUD of institution table.
+- job.py: CRUD of job table.
+- post.py: CRUD of post table.
+- skill.py: CRUD of skill table.
+- user.py: CRUD of user table.
 - front-end/src/lib: API, types
 - front-end/src/routes: all routes
