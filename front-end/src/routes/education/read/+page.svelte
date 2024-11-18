@@ -1,32 +1,35 @@
 <script lang="ts">
-  import { getEducation } from '$lib/api/education'; // Adjust the import path as necessary
+  import { getEducation } from '$lib/api/education'; // Ensure the import path is correct
 
-  let edu_id: string;
+  let user_id: string = '';
   let message = '';
-  let education: {
-    education_id?: number;
-    user_id?: number;
+  let educations: {
+    edu_id?: number;
     institution_id?: number;
-    start_date?: string;
-    end_date?: string;
     course?: string;
     duration?: number;
-  } = {};
+  }[] = [];
 
   const handleSubmit = async () => {
     try {
-      const response = await getEducation(edu_id);
+      const response = await getEducation(user_id);
+      console.log(response);
       if (response.status === 'success') {
-        education = response.education;
+        educations = response.educations.map((edu: any) => ({
+          edu_id: edu.edu_id,
+          institution_id: edu.institution_id,
+          course: edu.course,
+          duration: edu.duration
+        }));
         message = '';
       } else {
         message = `Error: ${response.message}`;
-        education = {};
+        educations = [];
       }
     } catch (error) {
       console.error(error);
-      message = 'Error fetching education record.';
-      education = {};
+      message = 'Error fetching education records.';
+      educations = [];
     }
   };
 </script>
@@ -85,7 +88,7 @@
 </style>
 
 <form on:submit|preventDefault={handleSubmit}>
-  <input type="number" bind:value={edu_id} placeholder="Education ID" required />
+  <input type="text" bind:value={user_id} placeholder="User ID" required />
   <button type="submit">Get Education</button>
 </form>
 
@@ -93,15 +96,15 @@
   <p class="message">{message}</p>
 {/if}
 
-{#if education.education_id}
+{#each educations as education}
   <div class="education-details">
     <h2>Education Details</h2>
-    <p><strong>ID:</strong> {education.education_id}</p>
-    <p><strong>User ID:</strong> {education.user_id}</p>
+    <p><strong>ID:</strong> {education.edu_id}</p>
     <p><strong>Institution ID:</strong> {education.institution_id}</p>
-    <p><strong>Start Date:</strong> {education.start_date}</p>
-    <p><strong>End Date:</strong> {education.end_date}</p>
     <p><strong>Course:</strong> {education.course}</p>
     <p><strong>Duration:</strong> {education.duration}</p>
   </div>
+{/each}
+{#if educations.length === 0 && !message}
+  <p class="message">No education records found for this user.</p>
 {/if}

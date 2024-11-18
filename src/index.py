@@ -76,9 +76,9 @@ def create_education_route():
     education_data = request.json
     return create_education(education_data, connection)
 
-@app.route('/education/<int:education_id>', methods=['GET'], strict_slashes=False)
-def get_education_route(education_id):
-    return get_education(education_id, connection)
+@app.route('/education/<int:user_id>', methods=['GET'], strict_slashes=False)
+def get_education_route(user_id):
+    return get_education(user_id, connection)
 
 @app.route('/education/<int:education_id>', methods=['PUT'], strict_slashes=False)
 def update_education_route(education_id):

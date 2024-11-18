@@ -11,14 +11,24 @@
 
   let message = '';
 
+
   const handleSubmit = async () => {
     try {
+      // Ensure the date format is yyyy-mm-dd
+      if (!education.start || !/^\d{4}-\d{2}-\d{2}$/.test(education.start)) {
+        message = "Start date must be provided and in 'YYYY-MM-DD' format.";
+        return;
+      }
+      education.start = new Date(education.start).toISOString().slice(0, 10);
+      education.end = education.end ? new Date(education.end).toISOString().slice(0, 10) : '';
+
       const response = await createEducation(education);
-      if (response.status === 'success') {
+      console.log(response);
+      if (response && response.education && response.education.status === 'success') {
         message = 'Education record created successfully!';
         handleRefresh();
       } else {
-        message = `Error: ${response.message}`;
+        message = `Error: ${response?.education?.message || 'Unknown error'}`;
       }
     } catch (error) {
       console.error(error);
@@ -82,14 +92,12 @@
 <form on:submit|preventDefault={handleSubmit}>
   <input type="number" bind:value={education.user_id} placeholder="User ID" required />
   <input type="number" bind:value={education.institution_id} placeholder="Institution ID" required />
-  <input type="date" bind:value={education.start} placeholder="Start Date" required />
-  <input type="date" bind:value={education.end} placeholder="End Date" />
+  <input type="date" bind:value={education.start} placeholder="Start Date (YYYY-MM-DD)" required />
+  <input type="date" bind:value={education.end} placeholder="End Date (YYYY-MM-DD)" />
   <input type="text" bind:value={education.course} placeholder="Course" required />
   <button type="submit">Create Education</button>
   <button on:click={handleRefresh}>Refresh</button>
-
 </form>
-
 
 {#if message}
   <p>{message}</p>

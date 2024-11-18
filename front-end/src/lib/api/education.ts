@@ -8,10 +8,11 @@ export async function getEducations() {
   return response.data;
 }
 
-export async function getEducation(education_id: string) {
-  const response = await axios.post(
-    `http://localhost:3000/education/${education_id}`
+export async function getEducation(user_id: string) {
+  const response = await axios.get(
+    `http://localhost:3000/education/${user_id}`
   );
+  console.log(response.data);
   return response.data;
 }
 
