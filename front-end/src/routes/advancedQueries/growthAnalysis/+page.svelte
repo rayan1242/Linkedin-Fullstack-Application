@@ -1,16 +1,22 @@
 <script lang="ts">
     import { onMount } from 'svelte';
-    import axios from 'axios';
     import { getgrowthanalysis } from '$lib/api/advancedQueries';
 
     let growthData: { name: string; start: string; employee_count: number; previous_count: number; growth: number }[] = [];
+    let error: string | null = null;
 
     async function getGrowthAnalysis() {
         try {
             const response = await getgrowthanalysis();
-            growthData = response.data.institution_growth;
-        } catch (error) {
-            console.error("Error fetching growth analysis data:", error);
+            console.log("API Response:", response);
+            if (response.status === "success") {
+                growthData = response.institution_growth;
+            } else {
+                error = response.message;
+            }
+        } catch (err) {
+            console.error("Error fetching growth analysis data:", err);
+            error = "Error fetching growth analysis data.";
         }
     }
 
@@ -54,7 +60,9 @@
 
 <div class="container">
     <h1>Institution Growth Analysis</h1>
-    {#if growthData.length > 0}
+    {#if error}
+        <p class="error">{error}</p>
+    {:else if growthData.length > 0}
         <table>
             <thead>
                 <tr>

@@ -10,7 +10,7 @@ export async function getInstitutions() {
 }
 
 export async function getInstitution(institution_id: string) {
-  const response = await axios.post(
+  const response = await axios.get(
     `http://localhost:3000/institution/${institution_id}`
   );
   return response.data;

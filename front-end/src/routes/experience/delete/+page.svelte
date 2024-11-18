@@ -1,7 +1,7 @@
 <script lang="ts">
     import { deleteExperience } from '$lib/api/experience'; // Adjust the import path as necessary
   
-    let experience_id: number;
+    let experience_id: string;
     let message = '';
   
     const handleSubmit = async () => {
