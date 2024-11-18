@@ -6,16 +6,17 @@
     let message = '';
 
     const handleSubmit = async () => {
+        
         try {
             const response = await deleteUser(user_id)
-            if (response.data.status === 'success') {
-                message = 'User deleted successfully!';
+            if (response.status === 'success') {
+                message = 'User Deleted Successfully!';
             } else {
                 message = `Error: ${response.data.message}`;
             }
         } catch (error) {
-            console.error(error);
-            message = 'Error creating user.';
+            console.log(error);
+            message = 'Error Deleting User.';
         }
     };
 

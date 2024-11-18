@@ -42,15 +42,15 @@
   </script>
   
   <form on:submit|preventDefault={handleSubmit}>
-    <input type="number" bind:value={institution_id} placeholder="Institution ID" required />
-    <input type="number" bind:value={institutionData.no_of_employees} placeholder="Number of Employees" required />
-    <input type="url" bind:value={institutionData.website} placeholder="Website" required />
-    <input type="text" bind:value={institutionData.industry} placeholder="Industry" required />
-    <input type="text" bind:value={institutionData.name} placeholder="Name" required />
-    <input type="text" bind:value={institutionData.description} placeholder="Description" required />
-    <input type="text" bind:value={institutionData.location_city} placeholder="City" required />
-    <input type="text" bind:value={institutionData.location_state} placeholder="State" required />
-    <input type="text" bind:value={institutionData.location_country} placeholder="Country" required />
+    <input type="number" bind:value={institution_id} placeholder="Institution ID"  />
+    <input type="number" bind:value={institutionData.no_of_employees} placeholder="Number of Employees"  />
+    <input type="url" bind:value={institutionData.website} placeholder="Website"  />
+    <input type="text" bind:value={institutionData.industry} placeholder="Industry"  />
+    <input type="text" bind:value={institutionData.name} placeholder="Name"  />
+    <input type="text" bind:value={institutionData.description} placeholder="Description"  />
+    <input type="text" bind:value={institutionData.location_city} placeholder="City"  />
+    <input type="text" bind:value={institutionData.location_state} placeholder="State"  />
+    <input type="text" bind:value={institutionData.location_country} placeholder="Country"  />
     <button type="submit">Update Institution</button>
   </form>
   

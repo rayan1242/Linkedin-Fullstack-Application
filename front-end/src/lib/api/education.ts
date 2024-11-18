@@ -7,10 +7,10 @@ export async function getEducations() {
   const response = await axios.get("http://localhost:3000/education");
   return response.data;
 }
-
-export async function getEducation(education_id: string) {
-  const response = await axios.post(
-    `http://localhost:3000/education/${education_id}`
+ 
+export async function getEducation(edu_id: string) {
+  const response = await axios.get(
+    `http://localhost:3000/education/${edu_id}`
   );
   return response.data;
 }
@@ -24,19 +24,19 @@ export async function createEducation(education: EducationParam) {
 }
 
 export async function updateEducation(
-  education_id: string,
+  edu_id: string,
   education: EducationParam
 ) {
   const response = await axios.put(
-    `http://localhost:3000/education/${education_id}`,
+    `http://localhost:3000/education/${edu_id}`,
     education
   );
   return response.data;
 }
 
-export async function deleteEducation(education_id: string) {
+export async function deleteEducation(edu_id: string) {
   const response = await axios.delete(
-    `http://localhost:3000/education/${education_id}`
+    `http://localhost:3000/education/${edu_id}`
   );
   return response.data;
 

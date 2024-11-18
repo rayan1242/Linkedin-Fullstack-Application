@@ -21,7 +21,7 @@
         message = `Error: ${response.message}`;
       }
     } catch (error) {
-      console.error(error);
+      console.log(error);
       message = 'Error creating education record.';
     }
   };
@@ -93,4 +93,4 @@
 
 {#if message}
   <p>{message}</p>
-{/if}
+{/if} 
