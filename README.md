@@ -1,5 +1,10 @@
 # CS425 Linkedin Project
 
+**Percentage Contribution** 
+Kaiyuan Ma 33%,
+Aditya Shinde 33%,
+Rayyan Maindargi 33%
+
 **LINK to video** https://www.loom.com/share/05e8d25393fd4092bca7abb5b1f7c9e7?sid=490d0cd4-1587-4beb-aa0b-f23024729ca3 
 
 A brief description of your project, what it does, and its purpose.
