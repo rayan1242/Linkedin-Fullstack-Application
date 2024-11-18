@@ -12,13 +12,15 @@ A brief description of your project, what it does, and its purpose.
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/Adi-shinde31/CS425-Linkedin-Project
-   cd CS425-Linkedin-Project
+   git clone git@github.com:rayan1242/Linkedin-Fullstack-Application.git
+   cd Linkedin-Fullstack-Application
    ```
 2. **Install dependencies:**
    ```bash
    pip install mysql-connector-python
    pip install tabulate
+   cd front-end
+   npm i
    ```
 
 ## Steps to Run
@@ -50,22 +52,13 @@ A brief description of your project, what it does, and its purpose.
    python3 src/main.py
    ```
 
-4. **Follow instruction on the menu:**
-
+   
    ```bash
-      Welcome to LinkedIn Dashboard
-
-      Choose one option
-      1. User
-      2. Education
-      3. Experience
-      4. Institution
-      5. Job
-      6. Post
-      7. Skill
-      8. Application
-      0. Exit
+   cd front-end
+   npm run dev
    ```
+
+4. **Go to the link in the terminal to use the application**
 
 ## File Description
 
@@ -78,3 +71,5 @@ A brief description of your project, what it does, and its purpose.
 - post.py: get_all_posts, CRUD of post table.
 - skill.py: get_all_skills, CRUD of skill table.
 - user.py: get_all_users, CRUD of user table.
+- front-end/src/lib: API, types
+- front-end/src/routes: all routes
