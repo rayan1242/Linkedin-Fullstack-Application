@@ -9,7 +9,7 @@ export async function getJobs() {
 }
 
 export async function getJob(job_id: string) {
-  const response = await axios.post(`http://localhost:3000/job/${job_id}`);
+  const response = await axios.get(`http://localhost:3000/job/${job_id}`);
   return response.data;
 }
 

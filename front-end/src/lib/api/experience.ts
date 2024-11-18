@@ -14,7 +14,7 @@ export async function getExperiences() {
 }
 
 export async function getExperience(experience_id: string) {
-  const response = await axios.post(
+  const response = await axios.get(
     `http://localhost:3000/experience/${experience_id}`
   );
   return response.data;
