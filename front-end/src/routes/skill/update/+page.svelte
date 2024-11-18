@@ -31,7 +31,7 @@
 {/if}
 
 
-/* General Reset */
+
 
 <style>
 *{

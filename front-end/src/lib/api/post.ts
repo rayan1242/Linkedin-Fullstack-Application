@@ -9,7 +9,7 @@ export async function getPosts() {
 }
 
 export async function getPost(post_id: string) {
-  const response = await axios.post(`http://localhost:3000/post/${post_id}`);
+  const response = await axios.get(`http://localhost:3000/post/${post_id}`);
   return response.data;
 }
 

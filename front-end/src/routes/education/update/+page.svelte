@@ -4,8 +4,8 @@
 
   let education_id: string;
   let educationData: EducationParam = {
-    user_id:0,
-    institution_id:0,
+    user_id: NaN,
+    institution_id: NaN,
     start: '',
     end: '',
     course: '',
@@ -13,18 +13,10 @@
 
   let message = '';
 
-  onMount(async () => {
-    try {
-      const education = await getEducation(education_id);
-      educationData = education;
-    } catch (e: any) {
-      console.log(e);
-    }
-  });
-
   const handleSubmit = async () => {
     try {
       const response = await updateEducation(education_id, educationData);
+      console.log(response);
       if (response.status === 'success') {
         message = 'Education record updated successfully!';
       } else {

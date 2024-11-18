@@ -2,10 +2,10 @@
   import { createPost, type PostParam } from '$lib/api/post';
 
   let post: PostParam = {
-      user_id: 0,
+      user_id: NaN,
       post_content: '',
       post_date: '',
-      likes: 0,
+      likes: NaN,
       last_liked_at: '',
   };
 
@@ -13,6 +13,8 @@
 
   const handleSubmit = async () => {
       try {
+        post.last_liked_at =  post.last_liked_at.replace('T', ' ') + ':00';
+        post.post_date =  post.post_date.replace('T', ' ') + ':00';
           const response = await createPost(post);
           if (response.status === 'success') {
               message = 'Post created successfully!';
@@ -28,10 +30,10 @@
 
   const resetForm = () => {
       post = {
-          user_id: 0,
+          user_id: NaN,
           post_content: '',
           post_date: '',
-          likes: 0,
+          likes: NaN,
           last_liked_at: '',
       };
   };
@@ -40,8 +42,10 @@
 <form on:submit|preventDefault={handleSubmit}>
   <input type="number" bind:value={post.user_id} placeholder="User ID" required />
   <textarea bind:value={post.post_content} placeholder="Post Content" required></textarea>
-  <input type="date" bind:value={post.post_date} placeholder="Post Date" required />
+  <label>Post Date</label>
+  <input type="datetime-local" bind:value={post.post_date} placeholder="Post Date" required />
   <input type="number" bind:value={post.likes} placeholder="Likes" />
+  <label>Last Liked At</label>
   <input type="datetime-local" bind:value={post.last_liked_at} placeholder="Last Liked At" />
   <button type="submit">Create Post</button>
 </form>
@@ -51,7 +55,7 @@
 {/if}
 
 
-/* General Reset */
+
 
 <style>
 *{

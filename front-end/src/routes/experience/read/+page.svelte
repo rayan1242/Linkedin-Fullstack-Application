@@ -3,35 +3,16 @@
 
   let exp_id: string;
   let message = '';
-  let experience = { 
-    exp_id: '',
-    user_id: 0,
-    institution_id: 0,
-    start: '',
-    end: '',
-    description: '',
-    title: '',
-    duration: 0
-  };
-
+  let experiences = []
   const handleSubmit = async () => {
       const response = await getExperience(exp_id);
       if (response.status === 'success'){ 
-        experience = response.experience;
+        console.log(response)
+        experiences = response.experiences;
         message = '';
       }
        else {
         message = `Error: ${response.message}`;
-        experience = {
-          exp_id: '',
-          user_id: 0,
-          institution_id: 0,
-          start: '',
-          end: '',
-          description: '',
-          title: '',
-          duration: 0
-        };
       }
 };
 </script>
@@ -81,7 +62,7 @@
 </style>
 
 <form on:submit|preventDefault={handleSubmit}>
-  <input type="number" bind:value={exp_id} placeholder="Experience ID" required />
+  <input type="number" bind:value={exp_id} placeholder="User ID" required />
   <button type="submit">Get Experience</button>
 </form>
 
@@ -89,7 +70,7 @@
   <p>{message}</p>
 {/if}
 
-{#if experience.exp_id}
+{#each experiences as experience}
   <div class="experience-details">
     <h2>Experience Details</h2>
     <p><strong>ID:</strong> {experience.exp_id}</p>
@@ -101,4 +82,4 @@
     <p><strong>Title:</strong> {experience.title}</p>
     <p><strong>Duration:</strong> {experience.duration}</p>
   </div>
-{/if}
+{/each}

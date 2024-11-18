@@ -1,3 +1,4 @@
+from datetime import datetime
 import mysql.connector
 from db import connect_to_database
 
@@ -7,22 +8,25 @@ def create_post(post_data,connection):
     cursor = connection.cursor(dictionary=True)
 
     user_id = post_data.get("user_id")
-    content = post_data.get("content")
-    created_at = post_data.get("created_at")
+    post_content = post_data.get("post_content")
+    post_date = post_data.get("post_date")
+    last_liked_at = post_data.get("last_liked_at")
+    likes = post_data.get("likes")
 
     try:
-        if not isinstance(user_id, int):
-            raise ValueError("User ID must be an integer.")
-        if not isinstance(content, str) or not content:
-            raise ValueError("Content must be a non-empty string.")
-        datetime.datetime.strptime(created_at, '%Y-%m-%d %H:%M:%S')
+        # if not isinstance(user_id, int):
+        #     raise ValueError("User ID must be an integer.")
+        if not isinstance(post_content, str) or not post_content:
+            raise ValueError("post_content must be a non-empty string.")
+        datetime.strptime(post_date, '%Y-%m-%d %H:%M:%S')
+        datetime.strptime(last_liked_at, '%Y-%m-%d %H:%M:%S')
     except ValueError as e:
         return {"status": "error", "message": str(e)}
 
     try:
-        query = """INSERT INTO post (user_id, content, created_at)
-                   VALUES (%s, %s, %s)"""
-        values = (user_id, content, created_at)
+        query = """INSERT INTO post (user_id, post_content, post_date, last_liked_at, likes)
+                   VALUES (%s, %s, %s, %s, %s)"""
+        values = (user_id, post_content, post_date, last_liked_at, likes)
 
         cursor.execute(query, values)
         connection.commit()
@@ -83,7 +87,7 @@ def update_post(post_id, update_data,connection):
     except mysql.connector.Error as err:
         return {"status": "error", "message": str(err)}
 
-    fields = ["user_id", "content", "created_at"]
+    fields = ["user_id", "post_content", "post_date", "last_liked_at", "likes"]
     updates = []
     values = []
 
@@ -93,9 +97,11 @@ def update_post(post_id, update_data,connection):
             try:
                 if field == "user_id":
                     value = int(value)
-                elif field == "created_at":
-                    datetime.datetime.strptime(value, '%Y-%m-%d %H:%M:%S')
-                elif field == "content":
+                elif field == "post_date":
+                    datetime.strptime(value, '%Y-%m-%d %H:%M:%S')
+                elif field == "last_liked_at":
+                    datetime.strptime(value, '%Y-%m-%d %H:%M:%S')
+                elif field == "post_content":
                     if not isinstance(value, str):
                         raise ValueError(f"{field} must be a string.")
                 updates.append(f"{field} = %s")

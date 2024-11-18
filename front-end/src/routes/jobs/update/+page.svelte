@@ -4,22 +4,13 @@
 
   let job_id: string;
   let jobData: JobParam = {
-    institution_id: 0,
+    institution_id: NaN,
     job_title: '',
     description: '',
     type: '',
   };
 
   let message = '';
-
-  onMount(async () => {
-    try {
-      const job = await getJob(job_id);
-      jobData = job;
-    } catch (e: any) {
-      console.error(e);
-    }
-  });
 
   const handleSubmit = async () => {
     try {
@@ -37,6 +28,7 @@
 </script>
 
 <form on:submit|preventDefault={handleSubmit}>
+  <input type="number" bind:value={job_id} placeholder="Job ID" required />
   <input type="number" bind:value={jobData.institution_id} placeholder="Institution ID" required />
   <input type="text" bind:value={jobData.job_title} placeholder="Job Title" required />
   <textarea bind:value={jobData.description} placeholder="Description" required></textarea>

@@ -192,6 +192,7 @@
     border-bottom: 1px solid #ccc;
     background-color: #f9f9f9;
     transition: background-color 0.3s ease;
+    z-index: -1;
   }
 
   .menu-section:hover {
@@ -203,6 +204,7 @@
     top: 25%; /* Position 30% from the top */
     left: 50%; /* Center horizontally */
     transform: translateX(-50%); /* Adjust for true horizontal centering */
+    width: 100%;
     font-size: 5rem; /* Font size for readability */
     font-weight: bold;
     color: #555; /* Subtle color */
@@ -221,8 +223,9 @@
   position: absolute; /* Make sure it covers the whole screen */
   top: 0;
   left: 0;
-  background-color: #f9f9f9; /* Optional background to make buttons stand out */
+  background-color: transparent; /* Optional background to make buttons stand out */
   gap: 30px; 
+  z-index: 2;
 }
 
 .crud-button {

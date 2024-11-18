@@ -2,8 +2,8 @@
   import { createEducation, type EducationParam } from '$lib/api/education'; // Adjust the import path as necessary
 
   let education: EducationParam = {
-    user_id: 0,
-    institution_id: 0,
+    user_id: NaN,
+    institution_id: NaN,
     start: '',
     end: '',
     course: '',
@@ -15,20 +15,21 @@
   const handleSubmit = async () => {
     try {
       // Ensure the date format is yyyy-mm-dd
-      if (!education.start || !/^\d{4}-\d{2}-\d{2}$/.test(education.start)) {
-        message = "Start date must be provided and in 'YYYY-MM-DD' format.";
-        return;
-      }
+      // if (!education.start || !/^\d{4}-\d{2}-\d{2}$/.test(education.start)) {
+      //   message = "Start date must be provided and in 'YYYY-MM-DD' format.";
+      //   return;
+      // }
       education.start = new Date(education.start).toISOString().slice(0, 10);
       education.end = education.end ? new Date(education.end).toISOString().slice(0, 10) : '';
 
+      console.log(education);
+
       const response = await createEducation(education);
       console.log(response);
-      if (response && response.education && response.education.status === 'success') {
+      if (response && response.education && response.status === 'success') {
         message = 'Education record created successfully!';
-        handleRefresh();
       } else {
-        message = `Error: ${response?.education?.message || 'Unknown error'}`;
+        message = `Error: ${response?.message || 'Unknown error'}`;
       }
     } catch (error) {
       console.log(error);
@@ -38,8 +39,8 @@
 
   const handleRefresh = () => {
     education = {
-      user_id: 0,
-      institution_id: 0,
+      user_id: NaN,
+      institution_id: NaN,
       start: '',
       end: '',
       course: '',
@@ -94,7 +95,7 @@
   <input type="number" bind:value={education.institution_id} placeholder="Institution ID" required />
   <input type="date" bind:value={education.start} placeholder="Start Date (YYYY-MM-DD)" required />
   <input type="date" bind:value={education.end} placeholder="End Date (YYYY-MM-DD)" />
-  <input type="text" bind:value={education.course} placeholder="Course" required />
+  <input type="text" bind:value={education.course} placeholder="Course ID" required />
   <button type="submit">Create Education</button>
   <button on:click={handleRefresh}>Refresh</button>
 </form>

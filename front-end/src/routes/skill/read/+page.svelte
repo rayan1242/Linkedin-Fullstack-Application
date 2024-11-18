@@ -40,7 +40,7 @@
 {/if}
 
 
-/* General Reset */
+
 
 <style>
 *{

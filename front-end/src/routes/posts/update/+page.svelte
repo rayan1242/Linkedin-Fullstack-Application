@@ -3,10 +3,10 @@
 
   let post_id: string = '';
   let post: PostParam = {
-      user_id: 0,
+      user_id: NaN,
       post_content: '',
       post_date: '',
-      likes: 0,
+      likes: NaN,
       last_liked_at: '',
   };
 
@@ -14,6 +14,8 @@
 
   const handleSubmit = async () => {
       try {
+         post.last_liked_at =  post.last_liked_at.replace('T', ' ') + ':00';
+          post.post_date =  post.post_date.replace('T', ' ') + ':00';
           const response = await updatePost(post_id, post);
           if (response.status === 'success') {
               message = 'Post updated successfully!';
@@ -31,7 +33,7 @@
   <input type="text" bind:value={post_id} placeholder="Post ID" required />
   <input type="number" bind:value={post.user_id} placeholder="User ID" required />
   <textarea bind:value={post.post_content} placeholder="Post Content" required></textarea>
-  <input type="date" bind:value={post.post_date} placeholder="Post Date" required />
+  <input type="datetime-local" bind:value={post.post_date} placeholder="Post Date" required />
   <input type="number" bind:value={post.likes} placeholder="Likes" />
   <input type="datetime-local" bind:value={post.last_liked_at} placeholder="Last Liked At" />
   <button type="submit">Update Post</button>
@@ -42,7 +44,7 @@
 {/if}
 
 
-/* General Reset */
+
 
 <style>
 *{

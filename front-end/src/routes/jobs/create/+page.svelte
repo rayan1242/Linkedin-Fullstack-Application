@@ -2,21 +2,20 @@
   import { createJob, type JobParam } from '$lib/api/job'; // Adjust the import path as necessary
   
   let job: JobParam = {
-    institution_id: 0,
+    institution_id: NaN,
     job_title: '',
     description: '',
     type: ''
   };
   
   let message = '';
-  let status = '';
+
   
   const handleSubmit = async () => {
     try {
       const response = await createJob(job);
       if (response.status === 'success') {
         message = 'Job created successfully!';
-        handleRefresh();
       } else {
         message = `Error: ${response.message}`;
       }
@@ -28,7 +27,7 @@
   
   const handleRefresh = () => {
     job = {
-      institution_id: 0,
+      institution_id: NaN,
       job_title: '',
       description: '',
       type: ''

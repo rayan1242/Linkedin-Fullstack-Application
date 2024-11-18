@@ -9,23 +9,23 @@ def create_application(application_data,connection):
     user_id = application_data.get("user_id")
     job_id = application_data.get("job_id")
     status = application_data.get("status")
-    applied_date = application_data.get("applied_date")
+    application_date = application_data.get("application_date")
 
     try:
-        if not isinstance(user_id, int):
-            raise ValueError("User ID must be an integer.")
+        # if not isinstance(user_id, int):
+        #     raise ValueError("User ID must be an integer.")
         if not isinstance(job_id, int):
             raise ValueError("Job ID must be an integer.")
         if not isinstance(status, str) or not status:
             raise ValueError("Status must be a non-empty string.")
-        datetime.datetime.strptime(applied_date, '%Y-%m-%d')
+        datetime.strptime(application_date, '%Y-%m-%d')
     except ValueError as e:
         return {"status": "error", "message": str(e)}
 
     try:
-        query = """INSERT INTO application (user_id, job_id, status, applied_date)
+        query = """INSERT INTO application (user_id, job_id, application_status, application_date)
                    VALUES (%s, %s, %s, %s)"""
-        values = (user_id, job_id, status, applied_date)
+        values = (user_id, job_id, status, application_date)
 
         cursor.execute(query, values)
         connection.commit()
@@ -86,7 +86,7 @@ def update_application(application_id, update_data,connection):
     except mysql.connector.Error as err:
         return {"status": "error", "message": str(err)}
 
-    fields = ["user_id", "job_id", "status", "applied_date"]
+    fields = ["user_id", "job_id", "application_status", "application_date"]
     updates = []
     values = []
 
@@ -96,9 +96,9 @@ def update_application(application_id, update_data,connection):
             try:
                 if field in ["user_id", "job_id"]:
                     value = int(value)
-                elif field == "applied_date":
-                    datetime.datetime.strptime(value, '%Y-%m-%d')
-                elif field == "status":
+                elif field == "application_date":
+                    datetime.strptime(value, '%Y-%m-%d')
+                elif field == "application_status":
                     if not isinstance(value, str):
                         raise ValueError(f"{field} must be a string.")
                 updates.append(f"{field} = %s")

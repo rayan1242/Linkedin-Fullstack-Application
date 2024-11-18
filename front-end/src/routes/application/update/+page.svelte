@@ -4,8 +4,8 @@
 
   let application_id: number;
   let applicationData: ApplicationParam = {
-    user_id: 0,
-    job_id: 0,
+    user_id: NaN,
+    job_id: NaN,
     application_status: '',
     application_date: ''
   };

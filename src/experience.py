@@ -8,38 +8,37 @@ def create_experience(experience_data,connection):
     cursor = connection.cursor(dictionary=True)
 
     user_id = experience_data.get("user_id")
+    institution_id = experience_data.get("institution_id")
+    user_id = experience_data.get("user_id")
     title = experience_data.get("title")
-    company = experience_data.get("company")
-    start_date = experience_data.get("start_date")
-    end_date = experience_data.get("end_date")
+    start = experience_data.get("start")
+    end = experience_data.get("end")
     description = experience_data.get("description")
 
     try:
-        if not isinstance(user_id, int):
-            raise ValueError("User ID must be an integer.")
+        # if not isinstance(user_id, int):
+        #     raise ValueError("User ID must be an integer.")
         if not isinstance(title, str) or not title:
             raise ValueError("Title must be a non-empty string.")
-        if not isinstance(company, str) or not company:
-            raise ValueError("Company must be a non-empty string.")
-        datetime.datetime.strptime(start_date, '%Y-%m-%d')
-        if end_date:
-            datetime.datetime.strptime(end_date, '%Y-%m-%d')
+        datetime.strptime(start, '%Y-%m-%d')
+        if end:
+            datetime.strptime(end, '%Y-%m-%d')
         if not isinstance(description, str):
             raise ValueError("Description must be a string.")
     except ValueError as e:
         return {"status": "error", "message": str(e)}
 
     try:
-        query = """INSERT INTO experience (user_id, title, company, start_date, end_date, description)
+        query = """INSERT INTO experience (user_id, institution_id, title, start, end, description)
                    VALUES (%s, %s, %s, %s, %s, %s)"""
-        values = (user_id, title, company, start_date, end_date, description)
+        values = (user_id, institution_id, title, start, end, description)
 
         cursor.execute(query, values)
         connection.commit()
         exp_id = cursor.lastrowid
 
         # Retrieve the created experience data
-        cursor.execute("SELECT * FROM experience WHERE experience_id = %s", (exp_id,))
+        cursor.execute("SELECT * FROM experience WHERE exp_id = %s", (exp_id,))
         created_experience = cursor.fetchone()
         return {"status": "success", "experience": created_experience}
     except mysql.connector.Error as err:
@@ -86,14 +85,14 @@ def update_experience(exp_id, update_data,connection):
     cursor = connection.cursor(dictionary=True)
 
     try:
-        cursor.execute("SELECT * FROM experience WHERE experience_id = %s", (exp_id,))
+        cursor.execute("SELECT * FROM experience WHERE exp_id = %s", (exp_id,))
         result = cursor.fetchone()
         if not result:
             return {"status": "error", "message": "Experience ID does not exist."}
     except mysql.connector.Error as err:
         return {"status": "error", "message": str(err)}
 
-    fields = ["title", "company", "start_date", "end_date", "description"]
+    fields = ["title", "start", "end", "description"]
     updates = []
     values = []
 
@@ -104,11 +103,8 @@ def update_experience(exp_id, update_data,connection):
                 if field == "title":
                     if not isinstance(value, str) or not value:
                         raise ValueError("Title must be a non-empty string.")
-                elif field == "company":
-                    if not isinstance(value, str) or not value:
-                        raise ValueError("Company must be a non-empty string.")
-                elif field in ["start_date", "end_date"]:
-                    datetime.datetime.strptime(value, '%Y-%m-%d')
+                elif field in ["start", "end"]:
+                    datetime.strptime(value, '%Y-%m-%d')
                 elif field == "description":
                     if not isinstance(value, str):
                         raise ValueError("Description must be a string.")
@@ -121,14 +117,14 @@ def update_experience(exp_id, update_data,connection):
         return {"status": "error", "message": "No fields to update"}
 
     try:
-        query = f"UPDATE experience SET {', '.join(updates)} WHERE experience_id = %s"
+        query = f"UPDATE experience SET {', '.join(updates)} WHERE exp_id = %s"
         values.append(exp_id)
 
         cursor.execute(query, tuple(values))
         connection.commit()
 
         # Retrieve the updated experience data
-        cursor.execute("SELECT * FROM experience WHERE experience_id = %s", (exp_id,))
+        cursor.execute("SELECT * FROM experience WHERE exp_id = %s", (exp_id,))
         updated_experience = cursor.fetchone()
         return {"status": "success", "experience": updated_experience}
     except mysql.connector.Error as err:
@@ -141,12 +137,12 @@ def delete_experience( exp_id,connection):
     cursor = connection.cursor(dictionary=True)
 
     try:
-        cursor.execute("SELECT * FROM experience WHERE experience_id = %s", (exp_id,))
+        cursor.execute("SELECT * FROM experience WHERE exp_id = %s", (exp_id,))
         result = cursor.fetchone()
         if not result:
             return {"status": "error", "message": "Experience ID does not exist."}
 
-        query = "DELETE FROM experience WHERE experience_id = %s"
+        query = "DELETE FROM experience WHERE exp_id = %s"
         cursor.execute(query, (exp_id,))
         connection.commit()
         return {"status": "success", "deleted_experience_id": exp_id}

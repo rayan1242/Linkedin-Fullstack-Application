@@ -102,7 +102,7 @@
     <p><strong>ID:</strong> {education.edu_id}</p>
     <p><strong>Institution ID:</strong> {education.institution_id}</p>
     <p><strong>Course:</strong> {education.course}</p>
-    <p><strong>Duration:</strong> {education.duration}</p>
+    <p><strong>Duration:</strong> {education.duration} days</p>
   </div>
 {/each}
 {#if educations.length === 0 && !message}

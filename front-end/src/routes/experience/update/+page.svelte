@@ -4,13 +4,13 @@
 
   let exp_id: string;
   let experienceData: ExperienceParams = {
-    user_id: 0,
-    institution_id: 0,
+    user_id: NaN,
+    institution_id: NaN,
     start: '',
     end: '',
     description: '',
     title: '',
-    duration: 0
+    duration: NaN
   };
 
   let message = '';

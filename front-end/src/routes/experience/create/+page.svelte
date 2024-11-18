@@ -2,13 +2,13 @@
   import { createExperience, type ExperienceParams } from '$lib/api/experience'; // Adjust the import path as necessary
 
   let experience: ExperienceParams = {
-    user_id: 0,
-    institution_id: 0,
+    user_id: NaN,
+    institution_id: NaN,
     start: '',
     end: '',
     description: '',
     title: '',
-    duration: 0
+    duration: NaN
   };
 
   let message = '';
@@ -18,7 +18,6 @@
       const response = await createExperience(experience);
       if (response.status === 'success') {
         message = 'Experience record created successfully!';
-        handleRefresh();
       } else {
         message = `Error: ${response.message}`;
       }
@@ -30,13 +29,13 @@
 
   const handleRefresh = () => {
     experience = {
-      user_id: 0,
-      institution_id: 0,
+      user_id: NaN,
+      institution_id: NaN,
       start: '',
       end: '',
       description: '',
       title: '',
-      duration: 0
+      duration: NaN
     };
     message = '';
   };

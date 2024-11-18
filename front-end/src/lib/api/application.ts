@@ -6,22 +6,19 @@ const api = axios.create({
 });
 
 export type ApplicationParam = Pick<
-
   Application,
   "user_id" | "job_id" | "application_status" | "application_date"
 >;
 
-
 export async function getApplications(): Promise<Application> {
   const response = await axios.get("http://localhost:3000/application");
   return response.data;
-
 }
 
 export async function getApplication(
   application_id: number
 ): Promise<Application> {
-  const response = await axios.post(
+  const response = await axios.get(
     `http://localhost:3000/application/${application_id}`
   );
 
@@ -46,7 +43,6 @@ export async function updateApplication(
   const response = await axios.put(
     `http://localhost:3000/application/${application_id}`,
     applicationParam
-
   );
   return response.data;
 }

@@ -9,7 +9,7 @@ def create_job(job_data,connection):
     institution_id = job_data.get("institution_id")
     job_title = job_data.get("job_title")
     description = job_data.get("description")
-    job_type = job_data.get("job_type")
+    type = job_data.get("type")
 
     try:
         if not isinstance(institution_id, int):
@@ -18,15 +18,15 @@ def create_job(job_data,connection):
             raise ValueError("Job title must be a non-empty string.")
         if not isinstance(description, str) or not description:
             raise ValueError("Description must be a non-empty string.")
-        if not isinstance(job_type, str) or not job_type:
+        if not isinstance(type, str) or not type:
             raise ValueError("Job type must be a non-empty string.")
     except ValueError as e:
         return {"status": "error", "message": str(e)}
 
     try:
-        query = """INSERT INTO job (institution_id, job_title, description, job_type)
+        query = """INSERT INTO job (institution_id, job_title, description, type)
                    VALUES (%s, %s, %s, %s)"""
-        values = (institution_id, job_title, description, job_type)
+        values = (institution_id, job_title, description, type)
 
         cursor.execute(query, values)
         connection.commit()
@@ -87,7 +87,7 @@ def update_job( job_id, update_data,connection):
     except mysql.connector.Error as err:
         return {"status": "error", "message": str(err)}
 
-    fields = ["institution_id", "job_title", "description", "job_type"]
+    fields = ["institution_id", "job_title", "description", "type"]
     updates = []
     values = []
 
@@ -97,7 +97,7 @@ def update_job( job_id, update_data,connection):
             try:
                 if field == "institution_id":
                     value = int(value)
-                elif field in ["job_title", "description", "job_type"]:
+                elif field in ["job_title", "description", "type"]:
                     if not isinstance(value, str):
                         raise ValueError(f"{field} must be a string.")
                 updates.append(f"{field} = %s")

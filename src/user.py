@@ -15,7 +15,7 @@ def create_user(user_data,connection):
     try:
         if len(name) < 2 or len(name) > 20:
             raise ValueError("Name must be between 2 and 20 characters")
-        datetime.datetime.strptime(dob, '%Y-%m-%d')
+        datetime.strptime(dob, '%Y-%m-%d')
         if not profile_pic.endswith(".jpg") and not profile_pic.endswith(".png") and not profile_pic.endswith(".jpeg"):
             raise ValueError("Profile picture URL must end with .jpg, .png, or .jpeg")
     except ValueError as e:
@@ -120,7 +120,7 @@ def update_user(user_id, user_data,connection):
                     if len(value) < 2 or len(value) > 20:
                         raise ValueError("Name must be between 2 and 20 characters")
                 elif field == "dob":
-                    datetime.datetime.strptime(value, '%Y-%m-%d')
+                    datetime.strptime(value, '%Y-%m-%d')
                 elif field == "profile_pic":
                     if not value.endswith(".jpg") and not value.endswith(".png") and not value.endswith(".jpeg"):
                         raise ValueError("Profile picture URL must end with .jpg, .png, or .jpeg")

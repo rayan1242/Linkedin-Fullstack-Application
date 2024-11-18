@@ -15,9 +15,9 @@
   const handleSubmit = async () => {
       try {
           const response = await getJob(job_id);
+          console.log(response)
           if (response.status === 'success') {
               job = response.job;
-              message = '';
           } else {
               message = `Error: ${response.message}`;
               job = {};
@@ -39,15 +39,13 @@
 <p class="message">{message}</p>
 {/if}
 
-{#if job.id}
+{#if job.job_id}
 <div class="details">
   <h2>Job Details</h2>
-  <p><strong>ID:</strong> {job.id}</p>
-  <p><strong>Title:</strong> {job.title}</p>
+  <p><strong>ID:</strong> {job.job_id}</p>
+  <p><strong>Title:</strong> {job.job_title}</p>
   <p><strong>Description:</strong> {job.description}</p>
-  <p><strong>Location:</strong> {job.location}</p>
-  <p><strong>Company:</strong> {job.company}</p>
-  <p><strong>Salary:</strong> ${job.salary}</p>
+
 </div>
 {/if}
 <style>

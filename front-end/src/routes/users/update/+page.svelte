@@ -4,9 +4,8 @@
 
     export let data;
 
-    let userId = data.userId;
-
     $: userData = {
+        id: '',
         name: '',
         dob: '',
         profile_pic: '',
@@ -17,19 +16,9 @@
 
     let message = '';
 
-    onMount(async () => {
-        try { 
-            const response = await getUser(userId);
-            userData = response.user;
-            userData.dob = new Date(userData.dob).toISOString().split('T')[0];
-        } catch(e: any) {
-            console.log(e);
-        }
-    });
-
     const handleSubmit = async () => {
         try {
-            const response = await updateUser(userId, userData);
+            const response = await updateUser(userData.id, userData);
             if (response.status === 'success') {
                 message = 'User updated successfully!';
             } else {
@@ -47,6 +36,10 @@
 </a>
 <div class="container">
     <form on:submit|preventDefault={handleSubmit} class="form">
+        <div class="form-group">
+            <label>Id</label>
+            <input type="text" bind:value={userData.id} placeholder="Id" />
+        </div>
         <div class="form-group">
             <label>Name</label>
             <input type="text" bind:value={userData.name} placeholder="Name" />

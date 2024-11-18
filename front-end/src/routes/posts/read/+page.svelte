@@ -16,7 +16,7 @@
       try {
           const response = await getPost(post_id);
           if (response) {
-              post = response;
+              post = response.post;
               message = '';
           } else {
               message = 'Post not found.';

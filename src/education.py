@@ -8,37 +8,37 @@ def create_education(education_data,connection):
 
     user_id = education_data.get("user_id")
     institution_id = education_data.get("institution_id")
-    start_date = education_data.get("start_date")
-    end_date = education_data.get("end_date")
+    start = education_data.get("start")
+    end = education_data.get("end")
     course = education_data.get("course")
 
     try:
-        if not isinstance(user_id, int):
-            raise ValueError("User ID must be an integer.")
+        # if not isinstance(user_id, int):
+        #     raise ValueError("User ID must be an integer.")
         if not isinstance(institution_id, int):
             raise ValueError("Institution ID must be an integer.")
         if not isinstance(course, str) or not course:
             raise ValueError("Course must be a non-empty string.")
-        if start_date:
-            start_date = datetime.strptime(start_date, '%Y-%m-%d').date()
+        if start:
+            start = datetime.strptime(start, '%Y-%m-%d').date()
         else:
             raise ValueError("Start date must be provided and in 'YYYY-MM-DD' format.")
-        if end_date:
-            end_date = datetime.strptime(end_date, '%Y-%m-%d').date()
+        if end:
+            end = datetime.strptime(end, '%Y-%m-%d').date()
     except ValueError as e:
         return {"status": "error", "message": str(e)}
 
     try:
         query = """INSERT INTO education (user_id, institution_id, course, start, end)
                    VALUES (%s, %s, %s, %s, %s)"""
-        values = (user_id, institution_id, course, start_date, end_date)
+        values = (user_id, institution_id, course, start, end)
 
         cursor.execute(query, values)
         connection.commit()
         education_id = cursor.lastrowid
 
         # Retrieve the created education data
-        cursor.execute("SELECT * FROM education WHERE education_id = %s", (education_id,))
+        cursor.execute("SELECT * FROM education WHERE edu_id = %s", (education_id,))
         created_education = cursor.fetchone()
         return {"status": "success", "education": created_education}
     except mysql.connector.Error as err:
@@ -95,7 +95,7 @@ def update_education( edu_id, update_data,connection):
     except mysql.connector.Error as err:
         return {"status": "error", "message": str(err)}
 
-    fields = ["user_id", "institution_id", "course", "start_date", "end_date"]
+    fields = ["user_id", "institution_id", "course", "start", "end"]
     updates = []
     values = []
 
@@ -105,8 +105,8 @@ def update_education( edu_id, update_data,connection):
             try:
                 if field in ["user_id", "institution_id"]:
                     value = int(value)
-                elif field in ["start_date", "end_date"]:
-                    datetime.datetime.strptime(value, '%Y-%m-%d')
+                elif field in ["start", "end"]:
+                    datetime.strptime(value, '%Y-%m-%d')
                 elif field == "course":
                     if not isinstance(value, str):
                         raise ValueError(f"{field} must be a string.")

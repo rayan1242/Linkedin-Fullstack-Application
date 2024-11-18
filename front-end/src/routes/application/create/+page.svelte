@@ -2,8 +2,8 @@
   import { createApplication, type ApplicationParam } from '$lib/api/application'; // Adjust the import path as necessary
 
   let application: ApplicationParam = {
-    user_id: 0,
-    job_id: 0,
+    user_id: NaN,
+    job_id: NaN,
     application_status: '',
     application_date: ''
   };
@@ -14,8 +14,7 @@
     try {
       const response = await createApplication(application);
       if (response.status === 'success') {
-        message = 'Application created successfully!';
-        handleRefresh();
+        message = 'Application created successfully!'; 
       } else {
         message = `Error: ${response.message}`;
       }
@@ -29,18 +28,18 @@
     application = {
       user_id: 0,
       job_id: 0,
-      application_status: '',
+      status: '',
       application_date: ''
     };
     message = '';
   };
 </script>
 
-<form on:submit|preventDefault={handleSubmit}>
-  <input type="number" bind:value={application.user_id} placeholder="User ID" required />
-  <input type="number" bind:value={application.job_id} placeholder="Job ID" required />
-  <input type="text" bind:value={application.application_status} placeholder="Application Status" required />
-  <input type="date" bind:value={application.application_date} placeholder="Application Date" required />
+<form on:submit|preventDefault={handleSubmit} class="flex flex-col p-2">
+  <input class="border-2 w-fit" type="number" bind:value={application.user_id} placeholder="User ID" required />
+  <input class="border-2 w-fit" type="number" bind:value={application.job_id} placeholder="Job ID" required />
+  <input class="border-2 w-fit" type="text" bind:value={application.status} placeholder="Application Status" required />
+  <input class="border-2 w-fit" type="date" bind:value={application.application_date} placeholder="Application Date" required />
   <button type="submit">Create Application</button>
 </form>
 

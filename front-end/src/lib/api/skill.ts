@@ -9,7 +9,7 @@ export async function getSkills() {
 }
 
 export async function getSkill(skill_id: string) {
-  const response = await axios.post(`http://localhost:3000/skill/${skill_id}`);
+  const response = await axios.get(`http://localhost:3000/skill/${skill_id}`);
   return response.data;
 }
 
@@ -34,5 +34,4 @@ export async function deleteSkill(skill_id: string) {
     `http://localhost:3000/skill/${skill_id}`
   );
   return response.data;
-
 }
