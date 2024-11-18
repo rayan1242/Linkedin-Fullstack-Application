@@ -49,7 +49,7 @@ A brief description of your project, what it does, and its purpose.
 3. **Run application:**
 
    ```bash
-   python3 src/main.py
+   python3 src/index.py
    ```
 
    
